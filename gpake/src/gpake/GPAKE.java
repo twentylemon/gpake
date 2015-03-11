@@ -50,8 +50,10 @@ public class GPAKE {
      * @param roundTimer timers for each of the rounds
      * @param verTimer timers for each verification round
      * @param verZTimer timer for verifying z
+     * @param keyTimer timer for calculating group keys
      */
-    private void run(PAKE[] pake, Timer[] roundTimer, Timer[] verTimer, Timer verZTimer){
+    private BigInteger[] run(PAKE[] pake, Timer[] roundTimer, Timer[] verTimer, Timer verZTimer, Timer keyTimer){
+        BigInteger[] keys = new BigInteger[pake.length];
         for (int round = 1; round <= pake[0].getNumRounds(); round++){
             roundTimer[round].start();
             for (int i = 0; i < pake.length; i++){
@@ -75,15 +77,22 @@ public class GPAKE {
             verTimer[round].stop();
             System.out.println(verTimer[round] + ", time: " + verTimer[round].getTime() + Timer.getUnit(verTimer[round].getDefaultTimeUnit()));
         }
+        keyTimer.start();
+        for (int i = 0; i < pake.length; i++){
+            keys[i] = pake[i].getKey();
+        }
+        keyTimer.stop();
+        System.out.println(keyTimer + ", time: " + keyTimer.getTime() + Timer.getUnit(keyTimer.getDefaultTimeUnit()));
+        return keys;
     }
 
     /**
      * displays the group keys after the protocol is complete
-     * @param pake the group
+     * @param keys the group keys
      */
-    private void displayKeys(PAKE[] pake){
-        for (int i = 0; i < pake.length; i++){
-            System.out.println("key #"+i+": " + pake[i].getKey());
+    private void displayKeys(BigInteger[] keys){
+        for (int i = 0; i < keys.length; i++){
+            System.out.println("key #"+i+": " + keys[i]);
         }
     }
 
@@ -94,8 +103,9 @@ public class GPAKE {
      * @param roundTimer timers for each of the rounds
      * @param verTimer timers for each verification round
      * @param verZTimer timer for verifying z
+     * @param keyTimer timer for calculating group keys
      */
-    private void displayResults(int size, List<String> failures, Timer[] roundTimer, Timer[] verTimer, Timer verZTimer, PrintStream out){
+    private void displayResults(int size, List<String> failures, Timer[] roundTimer, Timer[] verTimer, Timer verZTimer, Timer keyTimer, PrintStream out){
         out.println("overall results for n=" + size);
         out.println("total number of failures: " + failures.size());
         if (!failures.isEmpty()){
@@ -106,6 +116,7 @@ public class GPAKE {
             out.println(verTimer[round]);
         }
         out.println(verZTimer);
+        out.println(keyTimer);
         out.println();
     }
 
@@ -121,6 +132,7 @@ public class GPAKE {
         Timer[] roundTimer = new Timer[numRounds+1];
         Timer[] verTimer = new Timer[numRounds+1];
         Timer verZTimer = new Timer("verify Z", TimeUnit.NANOSECONDS);
+        Timer keyTimer = new Timer("key calc", TimeUnit.NANOSECONDS);
         for (int round = 1; round <= numRounds; round++){
             roundTimer[round] = new Timer("round  " + round, TimeUnit.NANOSECONDS);
             verTimer[round] = new Timer("verify " + round, TimeUnit.NANOSECONDS);
@@ -130,8 +142,8 @@ public class GPAKE {
         for (int it = 0; it < iterations; it++){
             try {
                 System.out.println("numUsers = " + pake.length + "\titeration " + (it+1));
-                run(pake, roundTimer, verTimer, verZTimer);
-                displayKeys(pake);
+                BigInteger[] keys = run(pake, roundTimer, verTimer, verZTimer, keyTimer);
+                displayKeys(keys);
                 System.out.println();
             } catch (SecurityException e){
                 failures.add(e.getMessage());
@@ -141,12 +153,13 @@ public class GPAKE {
                     verTimer[round].abort(it);
                 }
                 verZTimer.abort(it);
+                keyTimer.abort(it);
                 it--;   //decrease to run the correct number of trials still
             }
         }
-        displayResults(pake.length, failures, roundTimer, verTimer, verZTimer, System.out);
+        displayResults(pake.length, failures, roundTimer, verTimer, verZTimer, keyTimer, System.out);
         if (print != null){
-            displayResults(pake.length, failures, roundTimer, verTimer, verZTimer, print);
+            displayResults(pake.length, failures, roundTimer, verTimer, verZTimer, keyTimer, print);
         }
     }
 
