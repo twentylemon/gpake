@@ -122,14 +122,14 @@ public class SPEKE implements PAKE {
      * @param left the PAKE previous to this one
      * @param right the PAKE after this one
      * @return true if Z is verified
-     * @throws RuntimeException on failure, describing the error
+     * @throws SecurityException on failure, describing the error
      */
     @Override
     public boolean verifyZ(PAKE left, PAKE right){
         SPEKE sLeft = (SPEKE)left, sRight = (SPEKE)right;
         gPowZ = sLeft.gPowY.modInverse(p).multiply(sRight.gPowY).mod(p);
         if (gPowZ.equals(BigInteger.ONE)){
-            throw new RuntimeException("Round 1 verification failed at checking g^{y_{i+1}}/g^{y_{i-1}}!=1 for " + this);
+            throw new SecurityException("Round 1 verification failed at checking g^{y_{i+1}}/g^{y_{i-1}}!=1 for " + this);
         }
         return true;
     }
@@ -142,11 +142,11 @@ public class SPEKE implements PAKE {
         for (int i = 0; i < group.length; i++){
             if (group[i] == this){ continue; }
             if (group[i].gsPowX.compareTo(TWO) < 0 || group[i].gsPowX.compareTo(p.subtract(TWO)) > 0){
-                throw new RuntimeException("Round 1 verification failed at checking gs^{x_i} for " + group[i]);
+                throw new SecurityException("Round 1 verification failed at checking gs^{x_i} for " + group[i]);
             }
 
             if (!SchnorrZKP.verify(p, q, g, group[i].gPowY, group[i].schnorr, group[i].signerID)){
-                throw new RuntimeException("Round 1 verification failed at checking jth SchnorrZKP for for " + group[i]);
+                throw new SecurityException("Round 1 verification failed at checking jth SchnorrZKP for for " + group[i]);
             }
         }
         return true;
@@ -161,17 +161,17 @@ public class SPEKE implements PAKE {
             if (group[i] == this){ continue; }
 
             if (!ChaumPedersonZKP.verify(p, q, g, gPowY, gPowZ, gPowZPowY, chaum, signerID)){
-                throw new RuntimeException("Round 2 verification failed at checking jth Chaum-Pederson for (i,j)=("+this+","+group[i]+")");
+                throw new SecurityException("Round 2 verification failed at checking jth Chaum-Pederson for (i,j)=("+this+","+group[i]+")");
             }
 
             BigInteger KC = getKC(new SecretKeySpec(pairwiseKeysKC[i].toByteArray(), hmacName), group[i], this);
             if (!KC.equals(group[i].hMacsKC[pos])){
-                throw new RuntimeException("Round 2 verification failed at checking KC for (i,j)=("+this+","+group[i]+")");
+                throw new SecurityException("Round 2 verification failed at checking KC for (i,j)=("+this+","+group[i]+")");
             }
 
             BigInteger MAC = getMAC(new SecretKeySpec(pairwiseKeysMAC[i].toByteArray(), hmacName), group[i]);
             if (!MAC.equals(group[i].hMacsMAC[pos])){
-                throw new RuntimeException("Round 2 verification failed at checking MAC for (i,j)=("+this+","+group[i]+")");
+                throw new SecurityException("Round 2 verification failed at checking MAC for (i,j)=("+this+","+group[i]+")");
             }
         }
         return true;
@@ -182,7 +182,7 @@ public class SPEKE implements PAKE {
      * @param round which round to do
      * @return true if the protocol is verified for the round specified
      * @throws UnsupportedOperationException if round > getNumRounds() || round < 1
-     * @throws RuntimeException on failure, describing the error
+     * @throws SecurityException on failure, describing the error
      */
     @Override
     public boolean verifyRound(int round) {

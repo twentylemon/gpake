@@ -31,7 +31,7 @@ public interface PAKE {
      * @param round which round to do
      * @return true if the protocol is verified for the round specified
      * @throws UnsupportedOperationException if round > getNumRounds() || round < 1
-     * @throws RuntimeException on failure, describing the error
+     * @throws SecurityException on failure, describing the error
      */
     public boolean verifyRound(int round);
 
@@ -47,7 +47,7 @@ public interface PAKE {
      * @param left the PAKE previous to this one
      * @param right the PAKE after this one
      * @return true if Z is verified
-     * @throws RuntimeException on failure, describing the error
+     * @throws SecurityException on failure, describing the error
      */
     public boolean verifyZ(PAKE left, PAKE right);
 

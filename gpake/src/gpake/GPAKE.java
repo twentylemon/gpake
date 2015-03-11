@@ -133,7 +133,7 @@ public class GPAKE {
                 run(pake, roundTimer, verTimer, verZTimer);
                 displayKeys(pake);
                 System.out.println();
-            } catch (RuntimeException e){
+            } catch (SecurityException e){
                 failures.add(e.getMessage());
                 System.out.println("protocol failure: " + e);
                 for (int round = 1; round <= numRounds; round++){
@@ -150,6 +150,10 @@ public class GPAKE {
         }
     }
 
+    public static final int minUsers = 3;
+    public static final int maxUsers = 20;
+    public static final int maxIterations = 100;
+
     public static void main(String[] args){
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         dragonfly();
@@ -162,12 +166,12 @@ public class GPAKE {
         try {
             print = new PrintStream(new File("speke.txt"));
         } catch (FileNotFoundException ex){}
-        for (int n = 3; n <= 20; n++){
+        for (int n = minUsers; n <= maxUsers; n++){
             SPEKE[] group = new SPEKE[n];
             for (int i = 0; i < group.length; i++){
                 group[i] = new SPEKE(spekeP, spekeG, "password");
             }
-            new GPAKE().runTest(group, 100);
+            new GPAKE().runTest(group, maxIterations);
         }
     }
 
@@ -178,12 +182,12 @@ public class GPAKE {
         try {
             print = new PrintStream(new File("jpake.txt"));
         } catch (FileNotFoundException ex){}
-        for (int n = 3; n <= 20; n++){
+        for (int n = minUsers; n <= maxUsers; n++){
             JPAKE[] group = new JPAKE[n];
             for (int i = 0; i < group.length; i++){
                 group[i] = new JPAKE(jpakeP, jpakeQ, jpakeG, "password");
             }
-            new GPAKE().runTest(group, 100);
+            new GPAKE().runTest(group, maxIterations);
         }
     }
 
@@ -194,12 +198,12 @@ public class GPAKE {
         try {
             print = new PrintStream(new File("dragonfly.txt"));
         } catch (FileNotFoundException ex){}
-        for (int n = 3; n <= 20; n++){
+        for (int n = minUsers; n <= maxUsers; n++){
             Dragonfly[] group = new Dragonfly[n];
             for (int i = 0; i < group.length; i++){
                 group[i] = new Dragonfly(dragonflyP, dragonflyQ, dragonflyG, "password");
             }
-            new GPAKE().runTest(group, 100);
+            new GPAKE().runTest(group, maxIterations);
         }
     }
 }
