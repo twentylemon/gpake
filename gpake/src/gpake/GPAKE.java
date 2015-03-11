@@ -176,7 +176,7 @@ public class GPAKE {
      */
     public static void jpake(){
         try {
-            print = new PrintStream(new File("speke.txt"));
+            print = new PrintStream(new File("jpake.txt"));
         } catch (FileNotFoundException ex){}
         for (int n = 3; n <= 20; n++){
             JPAKE[] group = new JPAKE[n];

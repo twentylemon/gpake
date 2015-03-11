@@ -113,7 +113,7 @@ public class Dragonfly implements PAKE {
         chaum = new ChaumPedersonZKP(p, q, g, gPowY, y, gPowZ, gPowZPowY, signerID);
         for (int i = 0; i < group.length; i++){
             if (group[i] == this){ continue; }
-            BigInteger rawKey = P;  //@todo security
+            BigInteger rawKey = SHA256.get(ss[i], E[i], group[i].E[pos], s[i], group[i].s[pos], q);
             pairwiseKeysMAC[i] = SHA256.get(rawKey, "MAC");
             pairwiseKeysKC[i] = SHA256.get(rawKey, "KC");
             hMacsMAC[i] = getMAC(new SecretKeySpec(pairwiseKeysMAC[i].toByteArray(), hmacName), this);
