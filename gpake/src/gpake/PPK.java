@@ -54,14 +54,14 @@ public class PPK implements PAKE {
     private final BigInteger h1Const;
     private final BigInteger h3Const;
 
-    public PPK(BigInteger p, BigInteger r, BigInteger g, BigInteger h1, BigInteger h3, String password) {
+    public PPK(BigInteger p, BigInteger r, BigInteger g, BigInteger h1Const, BigInteger h3Const, String password) {
         this.p = p;
         this.r = r;
         this.q = p.subtract(BigInteger.ONE).divide(r);
         this.g = g;
         this.s = SHA256.get(password);
-        this.h1Const = h1;
-        this.h3Const = h3;
+        this.h1Const = h1Const;
+        this.h3Const = h3Const;
     }
 
     /**
@@ -87,8 +87,9 @@ public class PPK implements PAKE {
                 continue;
             }
             x[i] = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
-            m[i] = g.modPow(x[i], p).multiply(h1(pos, i, s).modPow(r, p));
-            schnorrA[i] = new SchnorrZKP(p, q, g, m[i], x[i], signerID);
+            BigInteger gPowX = g.modPow(x[i], p);
+            m[i] = gPowX.multiply(h1(pos, i, s).modPow(r, p));
+            schnorrA[i] = new SchnorrZKP(p, q, g, gPowX, x[i], signerID);
 
         }
         y = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
@@ -171,16 +172,12 @@ public class PPK implements PAKE {
                 continue;
             }
 
-            if (!SchnorrZKP.verify(p, q, g, group[i].gPowB[pos], group[i].schnorrB[pos], group[i].signerID)) {
-                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for bij. (i,j)=" + "(" + this + "," + group[i] + ")");
-            }
-
-            if (group[i].gPowB[pos].equals(BigInteger.ONE)) {
+            if (group[i].m[pos].equals(BigInteger.ZERO)) {
                 throw new SecurityException("Round 1 verification failed at checking g^{ji} !=1");
             }
 
-            if (!SchnorrZKP.verify(p, q, g, group[i].m[pos], group[i].schnorrA[pos], group[i].signerID)) {
-                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for aij. (i,j)=" + "(" + this + "," + group[i] + ")");
+            if (!SchnorrZKP.verify(p, q, g, group[i].m[pos].multiply(h1(pos, i,s).modInverse(p)), group[i].schnorrA[pos], group[i].signerID)) {
+                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for xij. (i,j)=" + "(" + this + "," + group[i] + ")");
             }
 
             if (!SchnorrZKP.verify(p, q, g, group[i].gPowY, group[i].schnorrY, group[i].signerID)) {
@@ -195,14 +192,22 @@ public class PPK implements PAKE {
      *
      * @return true if round two was successful
      */
-    private boolean verifyTwo() {
-        for (int i = 0; i < group.length; i++) {
-            if (group[i] == this) {
-                continue;
+    private boolean verifyTwo(){
+        for (int i = 0; i < group.length; i++){
+            if (group[i] == this){ continue; }
+
+            if (!ChaumPedersonZKP.verify(p, q, g, gPowY, gPowZ, gPowZPowY, chaum, signerID)){
+                throw new SecurityException("Round 2 verification failed at checking jth Chaum-Pederson for (i,j)=("+this+","+group[i]+")");
             }
 
-            if (!SchnorrZKP.verify(p, q, group[i].newGen[pos], group[i].newGenPowBeta[pos], group[i].schnorrBeta[pos], group[i].signerID)) {
-                throw new SecurityException("Round 2 verification failed at checking SchnorrZKP for betaij. (i,j)=" + "(" + this + "," + group[i] + ")");
+            BigInteger KC = getKC(new SecretKeySpec(pairwiseKeysKC[i].toByteArray(), hmacName), group[i], this);
+            if (!KC.equals(group[i].hMacsKC[pos])){
+                throw new SecurityException("Round 2 verification failed at checking KC for (i,j)=("+this+","+group[i]+")");
+            }
+
+            BigInteger MAC = getMAC(new SecretKeySpec(pairwiseKeysMAC[i].toByteArray(), hmacName), group[i]);
+            if (!MAC.equals(group[i].hMacsMAC[pos])){
+                throw new SecurityException("Round 2 verification failed at checking MAC for (i,j)=("+this+","+group[i]+")");
             }
         }
         return true;
@@ -264,9 +269,7 @@ public class PPK implements PAKE {
             mac.update(new BigInteger(String.valueOf(first.pos)).toByteArray());
             mac.update(new BigInteger(String.valueOf(second.pos)).toByteArray());
             mac.update(first.m[second.pos].toByteArray());
-            mac.update(first.gPowB[second.pos].toByteArray());
             mac.update(second.m[first.pos].toByteArray());
-            mac.update(second.gPowB[first.pos].toByteArray());
             return new BigInteger(mac.doFinal());
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException ex) {
             throw new RuntimeException("getKC threw " + ex);
@@ -326,7 +329,7 @@ public class PPK implements PAKE {
      */
     @Override
     public String toString() {
-        return "jpake #" + pos;
+        return "ppk #" + pos;
     }
 
 }
