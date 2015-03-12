@@ -33,7 +33,7 @@ public class PPK implements PAKE {
     private PPK[] group;
     private int pos;
 
-    private BigInteger[] x;
+    private BigInteger x;
     private BigInteger[] m;
     private SchnorrZKP[] schnorrA;
 
@@ -78,7 +78,10 @@ public class PPK implements PAKE {
      * Performs round one. P_i sends {g_s^{x_i}, g^{y_i}, zkp{y_i}}
      */
     private void roundOne() {
-        x = new BigInteger[group.length];
+
+        x = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
+        BigInteger gPowX = g.modPow(x, p);
+        System.out.println("In round 1, true g^x is: " + gPowX);//DEBUG
         m = new BigInteger[group.length];
         schnorrA = new SchnorrZKP[group.length];
 
@@ -86,11 +89,10 @@ public class PPK implements PAKE {
             if (group[i] == this) {
                 continue;
             }
-            x[i] = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
-            BigInteger gPowX = g.modPow(x[i], p);
-            m[i] = gPowX.multiply(h1(pos, i, s).modPow(r, p));
-            schnorrA[i] = new SchnorrZKP(p, q, g, gPowX, x[i], signerID);
 
+            m[i] = gPowX.multiply(h1(pos, i, s).modPow(r, p));
+            schnorrA[i] = new SchnorrZKP(p, q, g, gPowX, x, signerID);
+            System.out.println("In round 1, calculated h1 is: " + h1(pos, i, s));
         }
         y = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
         gPowY = g.modPow(y, p);
@@ -106,16 +108,16 @@ public class PPK implements PAKE {
         pairwiseKeysKC = new BigInteger[group.length];
         hMacsMAC = new BigInteger[group.length];
         hMacsKC = new BigInteger[group.length];
-        
+
         gPowZPowY = gPowZ.modPow(y, p);
         chaum = new ChaumPedersonZKP(p, q, g, gPowY, y, gPowZ, gPowZPowY, signerID);
         for (int i = 0; i < group.length; i++) {
             if (group[i] == this) {
                 continue;
             }
-            
-            BigInteger rawKey = group[i].m[pos].multiply(h1(i, pos, s).modPow(r, p).modInverse(p)).modPow(x[i], p);
-            rawKey = h3(i, pos, m[i], group[i].m[pos],rawKey, s);
+
+            BigInteger rawKey = group[i].m[pos].multiply(h1(i, pos, s).modPow(r, p).modInverse(p)).modPow(x, p);
+            rawKey = h3(i, pos, m[i], group[i].m[pos], rawKey, s);
             pairwiseKeysMAC[i] = SHA256.get(rawKey, "MAC");
             pairwiseKeysKC[i] = SHA256.get(rawKey, "KC");
 
@@ -176,7 +178,9 @@ public class PPK implements PAKE {
                 throw new SecurityException("Round 1 verification failed at checking g^{ji} !=1");
             }
 
-            if (!SchnorrZKP.verify(p, q, g, group[i].m[pos].multiply(h1(pos, i,s).modInverse(p)), group[i].schnorrA[pos], group[i].signerID)) {
+            if (!SchnorrZKP.verify(p, q, g, group[i].m[pos].multiply(h1(i, pos, s).modInverse(p)), group[i].schnorrA[pos], group[i].signerID)) {
+                System.out.println("In verify 1, recalculate h1 to be:" + h1(pos, i, s));
+                System.out.println("ZKP thinks g^x for "+ i +" and "+ pos + " is "+ group[i].m[pos].multiply(h1(pos,i,s).modInverse(p)).mod(p));
                 throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for xij. (i,j)=" + "(" + this + "," + group[i] + ")");
             }
 
@@ -192,22 +196,24 @@ public class PPK implements PAKE {
      *
      * @return true if round two was successful
      */
-    private boolean verifyTwo(){
-        for (int i = 0; i < group.length; i++){
-            if (group[i] == this){ continue; }
+    private boolean verifyTwo() {
+        for (int i = 0; i < group.length; i++) {
+            if (group[i] == this) {
+                continue;
+            }
 
-            if (!ChaumPedersonZKP.verify(p, q, g, gPowY, gPowZ, gPowZPowY, chaum, signerID)){
-                throw new SecurityException("Round 2 verification failed at checking jth Chaum-Pederson for (i,j)=("+this+","+group[i]+")");
+            if (!ChaumPedersonZKP.verify(p, q, g, gPowY, gPowZ, gPowZPowY, chaum, signerID)) {
+                throw new SecurityException("Round 2 verification failed at checking jth Chaum-Pederson for (i,j)=(" + this + "," + group[i] + ")");
             }
 
             BigInteger KC = getKC(new SecretKeySpec(pairwiseKeysKC[i].toByteArray(), hmacName), group[i], this);
-            if (!KC.equals(group[i].hMacsKC[pos])){
-                throw new SecurityException("Round 2 verification failed at checking KC for (i,j)=("+this+","+group[i]+")");
+            if (!KC.equals(group[i].hMacsKC[pos])) {
+                throw new SecurityException("Round 2 verification failed at checking KC for (i,j)=(" + this + "," + group[i] + ")");
             }
 
             BigInteger MAC = getMAC(new SecretKeySpec(pairwiseKeysMAC[i].toByteArray(), hmacName), group[i]);
-            if (!MAC.equals(group[i].hMacsMAC[pos])){
-                throw new SecurityException("Round 2 verification failed at checking MAC for (i,j)=("+this+","+group[i]+")");
+            if (!MAC.equals(group[i].hMacsMAC[pos])) {
+                throw new SecurityException("Round 2 verification failed at checking MAC for (i,j)=(" + this + "," + group[i] + ")");
             }
         }
         return true;
@@ -277,7 +283,7 @@ public class PPK implements PAKE {
     }
 
     private BigInteger h1(int a, int b, BigInteger pass) {
-        
+
         return SHA256.get(a, b, pass).add(this.h1Const).mod(p);
     }
 
