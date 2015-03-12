@@ -115,7 +115,7 @@ public class PPK implements PAKE {
             }
 
             BigInteger rawKey = group[i].m[pos].multiply(h1(i, pos, s).modPow(r, p).modInverse(p)).modPow(x, p);
-            rawKey = h3(i, pos, m[i], group[i].m[pos], rawKey, s);
+            rawKey = h3(i, pos, group[i].m[pos], m[i], rawKey, s).add(h3(pos, i, m[i], group[i].m[pos], rawKey, s)).mod(p);
             pairwiseKeysMAC[i] = SHA256.get(rawKey, "MAC");
             pairwiseKeysKC[i] = SHA256.get(rawKey, "KC");
 
@@ -237,20 +237,20 @@ public class PPK implements PAKE {
 
     /**
      * @param key
-     * @param jpake
+     * @param ppk
      * @return HMAC for message authentication
      */
-    private static BigInteger getMAC(SecretKey key, PPK jpake) {
+    private static BigInteger getMAC(SecretKey key, PPK ppk) {
         try {
             Mac mac = Mac.getInstance(hmacName, "BC");
             mac.init(key);
-            mac.update(jpake.gPowY.toByteArray());
-            mac.update(jpake.schnorrY.getGenPowV().toByteArray());
-            mac.update(jpake.schnorrY.getR().toByteArray());
-            mac.update(jpake.gPowZPowY.toByteArray());
-            mac.update(jpake.chaum.getGPowS().toByteArray());
-            mac.update(jpake.chaum.getGPowZPowS().toByteArray());
-            mac.update(jpake.chaum.getT().toByteArray());
+            mac.update(ppk.gPowY.toByteArray());
+            mac.update(ppk.schnorrY.getGenPowV().toByteArray());
+            mac.update(ppk.schnorrY.getR().toByteArray());
+            mac.update(ppk.gPowZPowY.toByteArray());
+            mac.update(ppk.chaum.getGPowS().toByteArray());
+            mac.update(ppk.chaum.getGPowZPowS().toByteArray());
+            mac.update(ppk.chaum.getT().toByteArray());
             return new BigInteger(mac.doFinal());
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException ex) {
             throw new RuntimeException("getMAC threw " + ex);
