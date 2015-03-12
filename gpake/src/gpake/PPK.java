@@ -81,7 +81,7 @@ public class PPK implements PAKE {
 
         x = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
         BigInteger gPowX = g.modPow(x, p);
-        System.out.println("In round 1, true g^x is: " + gPowX);//DEBUG
+        
         m = new BigInteger[group.length];
         schnorrA = new SchnorrZKP[group.length];
 
@@ -89,10 +89,8 @@ public class PPK implements PAKE {
             if (group[i] == this) {
                 continue;
             }
-
             m[i] = gPowX.multiply(h1(pos, i, s).modPow(r, p));
             schnorrA[i] = new SchnorrZKP(p, q, g, gPowX, x, signerID);
-            System.out.println("In round 1, calculated h1 is: " + h1(pos, i, s));
         }
         y = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
         gPowY = g.modPow(y, p);
@@ -178,9 +176,7 @@ public class PPK implements PAKE {
                 throw new SecurityException("Round 1 verification failed at checking g^{ji} !=1");
             }
 
-            if (!SchnorrZKP.verify(p, q, g, group[i].m[pos].multiply(h1(i, pos, s).modInverse(p)), group[i].schnorrA[pos], group[i].signerID)) {
-                System.out.println("In verify 1, recalculate h1 to be:" + h1(pos, i, s));
-                System.out.println("ZKP thinks g^x for "+ i +" and "+ pos + " is "+ group[i].m[pos].multiply(h1(pos,i,s).modInverse(p)).mod(p));
+            if (!SchnorrZKP.verify(p, q, g, group[i].m[pos].multiply(h1(i, pos, s).modPow(r, p).modInverse(p)).mod(p), group[i].schnorrA[pos], group[i].signerID)) {
                 throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for xij. (i,j)=" + "(" + this + "," + group[i] + ")");
             }
 
@@ -284,11 +280,11 @@ public class PPK implements PAKE {
 
     private BigInteger h1(int a, int b, BigInteger pass) {
 
-        return SHA256.get(a, b, pass).add(this.h1Const).mod(p);
+        return SHA256.get(a, b, pass.add(this.h1Const)).mod(p);
     }
 
     private BigInteger h3(int a, int b, BigInteger gPowX, BigInteger gPowY, BigInteger gPowXY, BigInteger pass) {
-        return SHA256.get(a, b, gPowX, gPowY, gPowXY, pass).add(this.h3Const).mod(p);
+        return SHA256.get(a, b, gPowX, gPowY, gPowXY, pass.add(this.h3Const)).mod(p);
     }
 
     /**
