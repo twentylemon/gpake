@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gpake;
 
 import java.math.BigInteger;
@@ -18,9 +17,9 @@ import java.security.NoSuchAlgorithmException;
 public class SHA256 {
 
     public static BigInteger get(BigInteger g, BigInteger gPowX, BigInteger gPowZ, BigInteger gPowZPowX,
-    		BigInteger gPowS, BigInteger gPowXPowS, String userID) {
+            BigInteger gPowS, BigInteger gPowXPowS, String userID) {
 
-    	try {
+        try {
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
 
             byte[] gBytes = g.toByteArray();
@@ -52,7 +51,8 @@ public class SHA256 {
             sha256.update(ByteBuffer.allocate(4).putInt(userIDBytes.length).array());
             sha256.update(userIDBytes);
             return new BigInteger(sha256.digest());
-    	} catch (NoSuchAlgorithmException ex) {}
+        } catch (NoSuchAlgorithmException ex) {
+        }
         return null;
     }
 
@@ -79,43 +79,44 @@ public class SHA256 {
             sha256.update(userIDBytes);
 
             return new BigInteger(sha256.digest());
-        } catch (NoSuchAlgorithmException ex) {}
+        } catch (NoSuchAlgorithmException ex) {
+        }
         return null;
     }
 
-
     public static BigInteger get(String s) {
-    	try {
+        try {
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
             sha256.update(s.getBytes());
             return new BigInteger(sha256.digest());
-    	} catch (NoSuchAlgorithmException e) {}
+        } catch (NoSuchAlgorithmException e) {
+        }
         return null;
     }
 
     public static BigInteger get(BigInteger s) {
-    	try {
+        try {
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
             sha256.update(s.toByteArray());
             return new BigInteger(sha256.digest());
-    	} catch (NoSuchAlgorithmException e) {}
+        } catch (NoSuchAlgorithmException e) {
+        }
         return null;
     }
 
     public static BigInteger get(BigInteger s, String str) {
-    	try {
+        try {
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
             sha256.update(s.toByteArray());
             sha256.update(str.getBytes());
             return new BigInteger(sha256.digest());
+        } catch (NoSuchAlgorithmException ex) {
         }
-        catch (NoSuchAlgorithmException ex) {}
         return null;
     }
 
-
-    public static BigInteger get(BigInteger ss, BigInteger Ea, BigInteger sa, BigInteger Eb, BigInteger sb, String signerID){
-    	try {
+    public static BigInteger get(BigInteger ss, BigInteger Ea, BigInteger sa, BigInteger Eb, BigInteger sb, String signerID) {
+        try {
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
             sha256.update(ss.toByteArray());
             sha256.update(Ea.toByteArray());
@@ -124,20 +125,47 @@ public class SHA256 {
             sha256.update(sb.toByteArray());
             sha256.update(signerID.getBytes());
             return new BigInteger(sha256.digest());
+        } catch (NoSuchAlgorithmException ex) {
         }
-        catch (NoSuchAlgorithmException ex) {}
         return null;
     }
 
-    public static BigInteger get(BigInteger ss, BigInteger Ea, BigInteger Eb, BigInteger sa, BigInteger sb, BigInteger q){
-    	try {
+    public static BigInteger get(BigInteger ss, BigInteger Ea, BigInteger Eb, BigInteger sa, BigInteger sb, BigInteger q) {
+        try {
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
             sha256.update(ss.toByteArray());
             sha256.update(Ea.multiply(Eb).toByteArray());
             sha256.update(sa.add(sb).mod(q).toByteArray());
             return new BigInteger(sha256.digest());
+        } catch (NoSuchAlgorithmException ex) {
         }
-        catch (NoSuchAlgorithmException ex) {}
+        return null;
+    }
+
+    public static BigInteger get(int a, int b, BigInteger s) {
+        try {
+            MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+            sha256.update(Integer.toString(a).getBytes());
+            sha256.update(Integer.toString(b).getBytes());
+            sha256.update(s.toByteArray());
+            return new BigInteger(sha256.digest());
+        } catch (NoSuchAlgorithmException ex) {
+        }
+        return null;
+    }
+
+    public static BigInteger get(int a, int b, BigInteger gPowX, BigInteger gPowY, BigInteger gPowXY, BigInteger pass) {
+        try {
+            MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+            sha256.update(Integer.toString(a).getBytes());
+            sha256.update(Integer.toString(b).getBytes());
+            sha256.update(gPowX.toByteArray());
+            sha256.update(gPowY.toByteArray());
+            sha256.update(gPowXY.toByteArray());
+            sha256.update(pass.toByteArray());
+            return new BigInteger(sha256.digest());
+        } catch (NoSuchAlgorithmException ex) {
+        }
         return null;
     }
 }

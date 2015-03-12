@@ -50,7 +50,7 @@ public class PPK implements PAKE {
     private ChaumPedersonZKP chaum;
 
     private String signerID;
-    
+
     private final BigInteger h1Const;
     private final BigInteger h3Const;
 
@@ -81,15 +81,13 @@ public class PPK implements PAKE {
         x = new BigInteger[group.length];
         m = new BigInteger[group.length];
         schnorrA = new SchnorrZKP[group.length];
-        
+
         for (int i = 0; i < group.length; i++) {
             if (group[i] == this) {
                 continue;
             }
             x[i] = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
-            BigInteger A = new BigInteger(Integer.toString(pos));
-            BigInteger B = new BigInteger(Integer.toString(i));
-            m[i] = g.modPow(x[i], p).multiply(h1(s.add(A).add(B)).modPow(r, p));
+            m[i] = g.modPow(x[i], p).multiply(h1(pos, i, s).modPow(r, p));
             schnorrA[i] = new SchnorrZKP(p, q, g, m[i], x[i], signerID);
 
         }
@@ -102,11 +100,28 @@ public class PPK implements PAKE {
      * Performs round two.
      */
     private void roundTwo() {
-        
-        
-    }
 
-    
+        pairwiseKeysMAC = new BigInteger[group.length];
+        pairwiseKeysKC = new BigInteger[group.length];
+        hMacsMAC = new BigInteger[group.length];
+        hMacsKC = new BigInteger[group.length];
+        
+        gPowZPowY = gPowZ.modPow(y, p);
+        chaum = new ChaumPedersonZKP(p, q, g, gPowY, y, gPowZ, gPowZPowY, signerID);
+        for (int i = 0; i < group.length; i++) {
+            if (group[i] == this) {
+                continue;
+            }
+            
+            BigInteger rawKey = group[i].m[pos].multiply(h1(i, pos, s).modPow(r, p).modInverse(p)).modPow(x[i], p);
+            rawKey = h3(i, pos, m[i], group[i].m[pos],rawKey, s);
+            pairwiseKeysMAC[i] = SHA256.get(rawKey, "MAC");
+            pairwiseKeysKC[i] = SHA256.get(rawKey, "KC");
+
+            hMacsMAC[i] = getMAC(new SecretKeySpec(pairwiseKeysMAC[i].toByteArray(), hmacName), this);
+            hMacsKC[i] = getKC(new SecretKeySpec(pairwiseKeysKC[i].toByteArray(), hmacName), this, group[i]);
+        }
+    }
 
     /**
      * Performs a round of communication.
@@ -193,7 +208,6 @@ public class PPK implements PAKE {
         return true;
     }
 
-
     /**
      * Verifies a round of communication.
      *
@@ -259,16 +273,15 @@ public class PPK implements PAKE {
         }
     }
 
-    
-    private BigInteger h1(BigInteger input){
-        return SHA256.get(input).add(this.h1Const).mod(p);
+    private BigInteger h1(int a, int b, BigInteger pass) {
+        
+        return SHA256.get(a, b, pass).add(this.h1Const).mod(p);
     }
-    
-    private BigInteger h3(BigInteger input){
-        return SHA256.get(input).add(this.h3Const).mod(p);
+
+    private BigInteger h3(int a, int b, BigInteger gPowX, BigInteger gPowY, BigInteger gPowXY, BigInteger pass) {
+        return SHA256.get(a, b, gPowX, gPowY, gPowXY, pass).add(this.h3Const).mod(p);
     }
-    
-    
+
     /**
      * Returns the communication key, or null if all the rounds have not been
      * done yet.
@@ -315,8 +328,5 @@ public class PPK implements PAKE {
     public String toString() {
         return "jpake #" + pos;
     }
-    
-    
-    
-    
+
 }

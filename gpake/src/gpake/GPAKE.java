@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gpake;
 
 import java.io.File;
@@ -36,49 +35,51 @@ public class GPAKE {
 
     /**
      * sets the group for each member of the gpake
+     *
      * @param pake the group to initialize
      */
-    private void initGroup(PAKE[] pake){
-        for (int i = 0; i < pake.length; i++){
+    private void initGroup(PAKE[] pake) {
+        for (int i = 0; i < pake.length; i++) {
             pake[i].setGroup(pake, i);
         }
     }
 
     /**
      * runs one gpake protocol
+     *
      * @param pake the group to run on
      * @param roundTimer timers for each of the rounds
      * @param verTimer timers for each verification round
      * @param verZTimer timer for verifying z
      * @param keyTimer timer for calculating group keys
      */
-    private BigInteger[] run(PAKE[] pake, Timer[] roundTimer, Timer[] verTimer, Timer verZTimer, Timer keyTimer){
+    private BigInteger[] run(PAKE[] pake, Timer[] roundTimer, Timer[] verTimer, Timer verZTimer, Timer keyTimer) {
         BigInteger[] keys = new BigInteger[pake.length];
-        for (int round = 1; round <= pake[0].getNumRounds(); round++){
+        for (int round = 1; round <= pake[0].getNumRounds(); round++) {
             roundTimer[round].start();
-            for (int i = 0; i < pake.length; i++){
+            for (int i = 0; i < pake.length; i++) {
                 pake[i].doRound(round);
             }
             roundTimer[round].stop();
             System.out.println(roundTimer[round] + ", time: " + roundTimer[round].getTime() + Timer.getUnit(roundTimer[round].getDefaultTimeUnit()));
 
-            if (round == 1){    //in the first round, need to verify the Z value
+            if (round == 1) {    //in the first round, need to verify the Z value
                 verZTimer.start();
-                for (int i = 0; i < pake.length; i++){
-                    pake[i].verifyZ(pake[i==0 ? pake.length-1 : i-1], pake[(i+1) % pake.length]);
+                for (int i = 0; i < pake.length; i++) {
+                    pake[i].verifyZ(pake[i == 0 ? pake.length - 1 : i - 1], pake[(i + 1) % pake.length]);
                 }
                 verZTimer.stop();
                 System.out.println(verZTimer + ", time: " + verZTimer.getTime() + Timer.getUnit(verZTimer.getDefaultTimeUnit()));
             }
             verTimer[round].start();
-            for (int i = 0; i < pake.length; i++){
+            for (int i = 0; i < pake.length; i++) {
                 pake[i].verifyRound(round);
             }
             verTimer[round].stop();
             System.out.println(verTimer[round] + ", time: " + verTimer[round].getTime() + Timer.getUnit(verTimer[round].getDefaultTimeUnit()));
         }
         keyTimer.start();
-        for (int i = 0; i < pake.length; i++){
+        for (int i = 0; i < pake.length; i++) {
             keys[i] = pake[i].getKey();
         }
         keyTimer.stop();
@@ -88,16 +89,18 @@ public class GPAKE {
 
     /**
      * displays the group keys after the protocol is complete
+     *
      * @param keys the group keys
      */
-    private void displayKeys(BigInteger[] keys){
-        for (int i = 0; i < keys.length; i++){
-            System.out.println("key #"+i+": " + keys[i]);
+    private void displayKeys(BigInteger[] keys) {
+        for (int i = 0; i < keys.length; i++) {
+            System.out.println("key #" + i + ": " + keys[i]);
         }
     }
 
     /**
      * displays the results after a run.
+     *
      * @param size the group size
      * @param failures the fail messages
      * @param roundTimer timers for each of the rounds
@@ -105,13 +108,13 @@ public class GPAKE {
      * @param verZTimer timer for verifying z
      * @param keyTimer timer for calculating group keys
      */
-    private void displayResults(int size, List<String> failures, Timer[] roundTimer, Timer[] verTimer, Timer verZTimer, Timer keyTimer, PrintStream out){
+    private void displayResults(int size, List<String> failures, Timer[] roundTimer, Timer[] verTimer, Timer verZTimer, Timer keyTimer, PrintStream out) {
         out.println("overall results for n=" + size);
         out.println("total number of failures: " + failures.size());
-        if (!failures.isEmpty()){
+        if (!failures.isEmpty()) {
             out.println(failures);
         }
-        for (int round = 1; round < roundTimer.length; round++){
+        for (int round = 1; round < roundTimer.length; round++) {
             out.println(roundTimer[round]);
             out.println(verTimer[round]);
         }
@@ -122,33 +125,34 @@ public class GPAKE {
 
     /**
      * runs and times the gpake protocol
+     *
      * @param pake the group
      * @param iterations the number of iterations
      */
-    public void runTest(PAKE[] pake, int iterations){
+    public void runTest(PAKE[] pake, int iterations) {
         initGroup(pake);    //tell everyone about the group and their position in it
 
         int numRounds = pake[0].getNumRounds();
-        Timer[] roundTimer = new Timer[numRounds+1];
-        Timer[] verTimer = new Timer[numRounds+1];
+        Timer[] roundTimer = new Timer[numRounds + 1];
+        Timer[] verTimer = new Timer[numRounds + 1];
         Timer verZTimer = new Timer("verify Z", TimeUnit.NANOSECONDS);
         Timer keyTimer = new Timer("key calc", TimeUnit.NANOSECONDS);
-        for (int round = 1; round <= numRounds; round++){
+        for (int round = 1; round <= numRounds; round++) {
             roundTimer[round] = new Timer("round  " + round, TimeUnit.NANOSECONDS);
             verTimer[round] = new Timer("verify " + round, TimeUnit.NANOSECONDS);
         }
 
         List<String> failures = new LinkedList<>();
-        for (int it = 0; it < iterations; it++){
+        for (int it = 0; it < iterations; it++) {
             try {
-                System.out.println("numUsers = " + pake.length + "\titeration " + (it+1));
+                System.out.println("numUsers = " + pake.length + "\titeration " + (it + 1));
                 BigInteger[] keys = run(pake, roundTimer, verTimer, verZTimer, keyTimer);
                 displayKeys(keys);
                 System.out.println();
-            } catch (SecurityException e){
+            } catch (SecurityException e) {
                 failures.add(e.getMessage());
                 System.out.println("protocol failure: " + e);
-                for (int round = 1; round <= numRounds; round++){
+                for (int round = 1; round <= numRounds; round++) {
                     roundTimer[round].abort(it);
                     verTimer[round].abort(it);
                 }
@@ -158,7 +162,7 @@ public class GPAKE {
             }
         }
         displayResults(pake.length, failures, roundTimer, verTimer, verZTimer, keyTimer, System.out);
-        if (print != null){
+        if (print != null) {
             displayResults(pake.length, failures, roundTimer, verTimer, verZTimer, keyTimer, print);
         }
     }
@@ -167,7 +171,7 @@ public class GPAKE {
     public static final int maxUsers = 20;
     public static final int maxIterations = 100;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         dragonfly();
     }
@@ -175,13 +179,14 @@ public class GPAKE {
     /**
      * runs speke tests
      */
-    public static void speke(){
+    public static void speke() {
         try {
             print = new PrintStream(new File("speke.txt"));
-        } catch (FileNotFoundException ex){}
-        for (int n = minUsers; n <= maxUsers; n++){
+        } catch (FileNotFoundException ex) {
+        }
+        for (int n = minUsers; n <= maxUsers; n++) {
             SPEKE[] group = new SPEKE[n];
-            for (int i = 0; i < group.length; i++){
+            for (int i = 0; i < group.length; i++) {
                 group[i] = new SPEKE(spekeP, spekeG, "password");
             }
             new GPAKE().runTest(group, maxIterations);
@@ -191,13 +196,14 @@ public class GPAKE {
     /**
      * runs jpake tests
      */
-    public static void jpake(){
+    public static void jpake() {
         try {
             print = new PrintStream(new File("jpake.txt"));
-        } catch (FileNotFoundException ex){}
-        for (int n = minUsers; n <= maxUsers; n++){
+        } catch (FileNotFoundException ex) {
+        }
+        for (int n = minUsers; n <= maxUsers; n++) {
             JPAKE[] group = new JPAKE[n];
-            for (int i = 0; i < group.length; i++){
+            for (int i = 0; i < group.length; i++) {
                 group[i] = new JPAKE(jpakeP, jpakeQ, jpakeG, "password");
             }
             new GPAKE().runTest(group, maxIterations);
@@ -207,13 +213,14 @@ public class GPAKE {
     /**
      * runs dragonfly tests
      */
-    public static void dragonfly(){
+    public static void dragonfly() {
         try {
             print = new PrintStream(new File("dragonfly.txt"));
-        } catch (FileNotFoundException ex){}
-        for (int n = minUsers; n <= maxUsers; n++){
+        } catch (FileNotFoundException ex) {
+        }
+        for (int n = minUsers; n <= maxUsers; n++) {
             Dragonfly[] group = new Dragonfly[n];
-            for (int i = 0; i < group.length; i++){
+            for (int i = 0; i < group.length; i++) {
                 group[i] = new Dragonfly(dragonflyP, dragonflyQ, dragonflyG, "password");
             }
             new GPAKE().runTest(group, maxIterations);
