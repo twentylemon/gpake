@@ -26,7 +26,7 @@ public class ChaumPedersonZKP {
         generateZKP(p, q, g, gPowX, x, gPowZ, gPowZPowX, signerID);
     }
 
-    public void generateZKP(BigInteger p, BigInteger q, BigInteger g, BigInteger gPowX, BigInteger x,
+    private void generateZKP(BigInteger p, BigInteger q, BigInteger g, BigInteger gPowX, BigInteger x,
                     BigInteger gPowZ, BigInteger gPowZPowX, String signerID) {
 
         // Generate s from [1, q-1] and compute (A, B) = (gen^s, genPowZ^s)

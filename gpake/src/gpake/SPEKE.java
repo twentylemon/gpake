@@ -139,14 +139,15 @@ public class SPEKE implements PAKE {
      * @return true if round one was successful
      */
     private boolean verifyOne(){
-        for (int i = 0; i < group.length; i++){
-            if (group[i] == this){ continue; }
-            if (group[i].gsPowX.compareTo(TWO) < 0 || group[i].gsPowX.compareTo(p.subtract(TWO)) > 0){
-                throw new SecurityException("Round 1 verification failed at checking gs^{x_i} for " + group[i]);
+        for (SPEKE member : group) {
+            if (member == this) {
+                continue;
             }
-
-            if (!SchnorrZKP.verify(p, q, g, group[i].gPowY, group[i].schnorr, group[i].signerID)){
-                throw new SecurityException("Round 1 verification failed at checking jth SchnorrZKP for for " + group[i]);
+            if (member.gsPowX.compareTo(TWO) < 0 || member.gsPowX.compareTo(p.subtract(TWO)) > 0) {
+                throw new SecurityException("Round 1 verification failed at checking gs^{x_i} for " + member);
+            }
+            if (!SchnorrZKP.verify(p, q, g, member.gPowY, member.schnorr, member.signerID)) {
+                throw new SecurityException("Round 1 verification failed at checking jth SchnorrZKP for for " + member);
             }
         }
         return true;

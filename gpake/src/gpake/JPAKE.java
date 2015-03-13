@@ -182,23 +182,21 @@ public class JPAKE implements PAKE {
      * @return true if round one was successful
      */
     private boolean verifyOne(){
-        for (int i = 0; i < group.length; i++){
-            if (group[i] == this){ continue; }
-
-            if (!SchnorrZKP.verify(p, q, g, group[i].gPowB[pos], group[i].schnorrB[pos], group[i].signerID)){
-                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for bij. (i,j)="+"(" + this + "," + group[i] + ")");
+        for (JPAKE member : group) {
+            if (member == this) {
+                continue;
             }
-
-            if (group[i].gPowB[pos].equals(BigInteger.ONE)){
+            if (!SchnorrZKP.verify(p, q, g, member.gPowB[pos], member.schnorrB[pos], member.signerID)) {
+                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for bij. (i,j)="+"(" + this + "," + member + ")");
+            }
+            if (member.gPowB[pos].equals(BigInteger.ONE)) {
                 throw new SecurityException("Round 1 verification failed at checking g^{ji} !=1");
             }
-
-            if (!SchnorrZKP.verify(p, q, g, group[i].gPowA[pos], group[i].schnorrA[pos], group[i].signerID)){
-                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for aij. (i,j)="+"(" + this + "," + group[i] + ")");
+            if (!SchnorrZKP.verify(p, q, g, member.gPowA[pos], member.schnorrA[pos], member.signerID)) {
+                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for aij. (i,j)="+"(" + this + "," + member + ")");
             }
-
-            if (!SchnorrZKP.verify(p, q, g, group[i].gPowY, group[i].schnorrY, group[i].signerID)){
-                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for yi. (i,j)="+"(" + this + "," + group[i] + ")");
+            if (!SchnorrZKP.verify(p, q, g, member.gPowY, member.schnorrY, member.signerID)) {
+                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for yi. (i,j)="+"(" + this + "," + member + ")");
             }
         }
         return true;
@@ -209,11 +207,12 @@ public class JPAKE implements PAKE {
      * @return true if round two was successful
      */
     private boolean verifyTwo(){
-        for (int i = 0; i < group.length; i++){
-            if (group[i] == this){ continue; }
-
-            if (!SchnorrZKP.verify(p, q, group[i].newGen[pos], group[i].newGenPowBeta[pos], group[i].schnorrBeta[pos], group[i].signerID)){
-                throw new SecurityException("Round 2 verification failed at checking SchnorrZKP for betaij. (i,j)="+"(" + this + "," + group[i] + ")");
+        for (JPAKE member : group) {
+            if (member == this) {
+                continue;
+            }
+            if (!SchnorrZKP.verify(p, q, member.newGen[pos], member.newGenPowBeta[pos], member.schnorrBeta[pos], member.signerID)) {
+                throw new SecurityException("Round 2 verification failed at checking SchnorrZKP for betaij. (i,j)="+"(" + this + "," + member + ")");
             }
         }
         return true;

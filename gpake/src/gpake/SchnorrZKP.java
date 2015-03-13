@@ -24,7 +24,7 @@ public class SchnorrZKP {
         generateZKP(p, q, gen, genPowX, x, signerID);
     }
 
-    public void generateZKP(BigInteger p, BigInteger q, BigInteger gen, BigInteger genPowX, BigInteger x, String signerID){
+    private void generateZKP(BigInteger p, BigInteger q, BigInteger gen, BigInteger genPowX, BigInteger x, String signerID){
         /* Generate a random v from [1, q-1], and compute V = gen^v */
         BigInteger v = org.bouncycastle.util.BigIntegers.createRandomInRange(BigInteger.ONE, q.subtract(BigInteger.ONE), new SecureRandom());
         genPowV = gen.modPow(v, p);

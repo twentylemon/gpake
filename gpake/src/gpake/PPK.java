@@ -21,7 +21,6 @@ import org.bouncycastle.util.BigIntegers;
  */
 public class PPK implements PAKE {
 
-    private final static BigInteger TWO = new BigInteger("2");
     private final static String hmacName = "HMac-SHA256";
 
     private final BigInteger p;
@@ -35,7 +34,6 @@ public class PPK implements PAKE {
 
     private BigInteger x;
     private BigInteger[] m;
-    private SchnorrZKP[] schnorrA;
 
     private BigInteger y;
     private BigInteger gPowY;
@@ -54,10 +52,10 @@ public class PPK implements PAKE {
     private final BigInteger h1Const;
     private final BigInteger h3Const;
 
-    public PPK(BigInteger p, BigInteger r, BigInteger g, BigInteger h1Const, BigInteger h3Const, String password) {
+    public PPK(BigInteger p, BigInteger q, BigInteger g, BigInteger h1Const, BigInteger h3Const, String password) {
         this.p = p;
-        this.r = r;
-        this.q = p.subtract(BigInteger.ONE).divide(r);
+        this.q = q;
+        this.r = p.subtract(BigInteger.ONE).divide(q);
         this.g = g;
         this.s = SHA256.get(password);
         this.h1Const = h1Const;
@@ -81,17 +79,16 @@ public class PPK implements PAKE {
 
         x = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
         BigInteger gPowX = g.modPow(x, p);
-        
         m = new BigInteger[group.length];
-        schnorrA = new SchnorrZKP[group.length];
-
+        
         for (int i = 0; i < group.length; i++) {
             if (group[i] == this) {
                 continue;
             }
+            // Need to broadcast a different g^x*h1(x_i, x_j, s)^r to each group member.
             m[i] = gPowX.multiply(h1(pos, i, s).modPow(r, p));
-            schnorrA[i] = new SchnorrZKP(p, q, g, gPowX, x, signerID);
         }
+        
         y = BigIntegers.createRandomInRange(BigInteger.ZERO, q.subtract(BigInteger.ONE), new SecureRandom());
         gPowY = g.modPow(y, p);
         schnorrY = new SchnorrZKP(p, q, g, gPowY, y, signerID);
@@ -114,7 +111,9 @@ public class PPK implements PAKE {
                 continue;
             }
 
+            // rawKey is g^(x_i*x_j).
             BigInteger rawKey = group[i].m[pos].multiply(h1(i, pos, s).modPow(r, p).modInverse(p)).modPow(x, p);
+            // Use a combination of both keys to establish the pairwise key.
             rawKey = h3(i, pos, group[i].m[pos], m[i], rawKey, s).add(h3(pos, i, m[i], group[i].m[pos], rawKey, s)).mod(p);
             pairwiseKeysMAC[i] = SHA256.get(rawKey, "MAC");
             pairwiseKeysKC[i] = SHA256.get(rawKey, "KC");
@@ -167,21 +166,15 @@ public class PPK implements PAKE {
      * @return true if round one was successful
      */
     private boolean verifyOne() {
-        for (int i = 0; i < group.length; i++) {
-            if (group[i] == this) {
+        for (PPK member : group) {
+            if (member == this) {
                 continue;
             }
-
-            if (group[i].m[pos].equals(BigInteger.ZERO)) {
+            if (member.m[pos].equals(BigInteger.ZERO)) {
                 throw new SecurityException("Round 1 verification failed at checking g^{ji} !=1");
             }
-
-            if (!SchnorrZKP.verify(p, q, g, group[i].m[pos].multiply(h1(i, pos, s).modPow(r, p).modInverse(p)).mod(p), group[i].schnorrA[pos], group[i].signerID)) {
-                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for xij. (i,j)=" + "(" + this + "," + group[i] + ")");
-            }
-
-            if (!SchnorrZKP.verify(p, q, g, group[i].gPowY, group[i].schnorrY, group[i].signerID)) {
-                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for yi. (i,j)=" + "(" + this + "," + group[i] + ")");
+            if (!SchnorrZKP.verify(p, q, g, member.gPowY, member.schnorrY, member.signerID)) {
+                throw new SecurityException("Round 1 verification failed at checking SchnorrZKP for yi. (i,j)=" + "(" + this + "," + member + ")");
             }
         }
         return true;
