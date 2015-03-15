@@ -1,0 +1,198 @@
+overall results for n=3
+total number of failures: 0
+round  1: 13632983832ns, mean: 136329838ns, stddev: 4271307ns
+verify 1: 19997340956ns, mean: 199973409ns, stddev: 2667626ns
+round  2: 12704216443ns, mean: 127042164ns, stddev: 1581393ns
+verify 2: 18056216ns, mean: 180562ns, stddev: 67208ns
+round  3: 10551934357ns, mean: 105519343ns, stddev: 60527902ns
+verify 3: 33391180747ns, mean: 333911807ns, stddev: 4542119ns
+verify Z: 240619198ns, mean: 2406191ns, stddev: 472451ns
+key calc: 3348730607ns, mean: 33487306ns, stddev: 889051ns
+
+overall results for n=4
+total number of failures: 0
+round  1: 22595118493ns, mean: 225951184ns, stddev: 1100626ns
+verify 1: 39542021605ns, mean: 395420216ns, stddev: 2533540ns
+round  2: 25269279164ns, mean: 252692791ns, stddev: 1450356ns
+verify 2: 20837830ns, mean: 208378ns, stddev: 31245ns
+round  3: 13148760552ns, mean: 131487605ns, stddev: 688190ns
+verify 3: 66032316136ns, mean: 660323161ns, stddev: 4284194ns
+verify Z: 313537176ns, mean: 3135371ns, stddev: 39449ns
+key calc: 4532621923ns, mean: 45326219ns, stddev: 400075ns
+
+overall results for n=5
+total number of failures: 0
+round  1: 33983829954ns, mean: 339838299ns, stddev: 1315922ns
+verify 1: 65914018037ns, mean: 659140180ns, stddev: 3675077ns
+round  2: 42042967622ns, mean: 420429676ns, stddev: 1381307ns
+verify 2: 29838265ns, mean: 298382ns, stddev: 4078ns
+round  3: 16424690901ns, mean: 164246909ns, stddev: 902445ns
+verify 3: 109920990989ns, mean: 1099209909ns, stddev: 6038488ns
+verify Z: 388411298ns, mean: 3884112ns, stddev: 30667ns
+key calc: 5766148290ns, mean: 57661482ns, stddev: 673080ns
+
+overall results for n=6
+total number of failures: 0
+round  1: 47630300656ns, mean: 476303006ns, stddev: 1571642ns
+verify 1: 98823579853ns, mean: 988235798ns, stddev: 4642803ns
+round  2: 63051572409ns, mean: 630515724ns, stddev: 1708615ns
+verify 2: 44419567ns, mean: 444195ns, stddev: 15026ns
+round  3: 19716832279ns, mean: 197168322ns, stddev: 944899ns
+verify 3: 164756746723ns, mean: 1647567467ns, stddev: 9146013ns
+verify Z: 465479090ns, mean: 4654790ns, stddev: 37700ns
+key calc: 7059983092ns, mean: 70599830ns, stddev: 441413ns
+
+overall results for n=7
+total number of failures: 0
+round  1: 63592294411ns, mean: 635922944ns, stddev: 1644035ns
+verify 1: 138349335771ns, mean: 1383493357ns, stddev: 6158097ns
+round  2: 88222216208ns, mean: 882222162ns, stddev: 2668219ns
+verify 2: 62530099ns, mean: 625300ns, stddev: 83436ns
+round  3: 23036080224ns, mean: 230360802ns, stddev: 973861ns
+verify 3: 231011937548ns, mean: 2310119375ns, stddev: 11974272ns
+verify Z: 543856057ns, mean: 5438560ns, stddev: 121171ns
+key calc: 8407012272ns, mean: 84070122ns, stddev: 474162ns
+
+overall results for n=8
+total number of failures: 0
+round  1: 81946723612ns, mean: 819467236ns, stddev: 2133002ns
+verify 1: 184462835784ns, mean: 1844628357ns, stddev: 7377916ns
+round  2: 117638209409ns, mean: 1176382094ns, stddev: 3118899ns
+verify 2: 83788232ns, mean: 837882ns, stddev: 114181ns
+round  3: 26390622315ns, mean: 263906223ns, stddev: 876624ns
+verify 3: 307799840673ns, mean: 3077998406ns, stddev: 13766302ns
+verify Z: 621374978ns, mean: 6213749ns, stddev: 87625ns
+key calc: 9823957269ns, mean: 98239572ns, stddev: 653388ns
+
+overall results for n=9
+total number of failures: 0
+round  1: 102585178244ns, mean: 1025851782ns, stddev: 2016987ns
+verify 1: 237300862468ns, mean: 2373008624ns, stddev: 9205928ns
+round  2: 151261449713ns, mean: 1512614497ns, stddev: 4009553ns
+verify 2: 106354849ns, mean: 1063548ns, stddev: 86659ns
+round  3: 29762960844ns, mean: 297629608ns, stddev: 1433193ns
+verify 3: 396149260966ns, mean: 3961492609ns, stddev: 18158993ns
+verify Z: 698665623ns, mean: 6986656ns, stddev: 46586ns
+key calc: 11274650659ns, mean: 112746506ns, stddev: 1434339ns
+
+overall results for n=10
+total number of failures: 0
+round  1: 125528156627ns, mean: 1255281566ns, stddev: 2460050ns
+verify 1: 296539653357ns, mean: 2965396533ns, stddev: 9158886ns
+round  2: 189067734964ns, mean: 1890677349ns, stddev: 4199125ns
+verify 2: 131979361ns, mean: 1319793ns, stddev: 7028ns
+round  3: 33153902934ns, mean: 331539029ns, stddev: 1107666ns
+verify 3: 494740117253ns, mean: 4947401172ns, stddev: 18414496ns
+verify Z: 777067571ns, mean: 7770675ns, stddev: 127016ns
+key calc: 12797952910ns, mean: 127979529ns, stddev: 831482ns
+
+overall results for n=11
+total number of failures: 0
+round  1: 150814167543ns, mean: 1508141675ns, stddev: 2724424ns
+verify 1: 362396957279ns, mean: 3623969572ns, stddev: 13189264ns
+round  2: 231091446633ns, mean: 2310914466ns, stddev: 4585931ns
+verify 2: 161944403ns, mean: 1619444ns, stddev: 90658ns
+round  3: 36561486700ns, mean: 365614867ns, stddev: 1077256ns
+verify 3: 604830816198ns, mean: 6048308161ns, stddev: 27310450ns
+verify Z: 856066424ns, mean: 8560664ns, stddev: 162644ns
+key calc: 14393835586ns, mean: 143938355ns, stddev: 825771ns
+
+overall results for n=12
+total number of failures: 0
+round  1: 178366117151ns, mean: 1783661171ns, stddev: 2920606ns
+verify 1: 434996057666ns, mean: 4349960576ns, stddev: 13674737ns
+round  2: 277161733395ns, mean: 2771617333ns, stddev: 4793933ns
+verify 2: 195067213ns, mean: 1950672ns, stddev: 117017ns
+round  3: 39974625432ns, mean: 399746254ns, stddev: 1517732ns
+verify 3: 725515753805ns, mean: 7255157538ns, stddev: 29275244ns
+verify Z: 932038368ns, mean: 9320383ns, stddev: 109725ns
+key calc: 16066643304ns, mean: 160666433ns, stddev: 694402ns
+
+overall results for n=13
+total number of failures: 0
+round  1: 208156704127ns, mean: 2081567041ns, stddev: 3493159ns
+verify 1: 514063254042ns, mean: 5140632540ns, stddev: 16362751ns
+round  2: 327614568287ns, mean: 3276145682ns, stddev: 4220960ns
+verify 2: 231000541ns, mean: 2310005ns, stddev: 130439ns
+round  3: 43418878870ns, mean: 434188788ns, stddev: 1526505ns
+verify 3: 857135641203ns, mean: 8571356412ns, stddev: 29819650ns
+verify Z: 1008354877ns, mean: 10083548ns, stddev: 50208ns
+key calc: 17769305656ns, mean: 177693056ns, stddev: 791998ns
+
+overall results for n=14
+total number of failures: 0
+round  1: 240337431601ns, mean: 2403374316ns, stddev: 3472732ns
+verify 1: 599821762402ns, mean: 5998217624ns, stddev: 18888329ns
+round  2: 382310609873ns, mean: 3823106098ns, stddev: 5837130ns
+verify 2: 269522462ns, mean: 2695224ns, stddev: 156548ns
+round  3: 46871956422ns, mean: 468719564ns, stddev: 2004380ns
+verify 3: 1000693216661ns, mean: 10006932166ns, stddev: 36691568ns
+verify Z: 1086335222ns, mean: 10863352ns, stddev: 116350ns
+key calc: 19588989573ns, mean: 195889895ns, stddev: 1788110ns
+
+overall results for n=15
+total number of failures: 0
+round  1: 274794623495ns, mean: 2747946234ns, stddev: 3462865ns
+verify 1: 691925174043ns, mean: 6919251740ns, stddev: 20011439ns
+round  2: 440948486457ns, mean: 4409484864ns, stddev: 5993201ns
+verify 2: 310182014ns, mean: 3101820ns, stddev: 121368ns
+round  3: 50351560999ns, mean: 503515609ns, stddev: 2731189ns
+verify 3: 1154076446986ns, mean: 11540764469ns, stddev: 43320011ns
+verify Z: 1165607392ns, mean: 11656073ns, stddev: 175776ns
+key calc: 21453423430ns, mean: 214534234ns, stddev: 884982ns
+
+overall results for n=16
+total number of failures: 0
+round  1: 311489836718ns, mean: 3114898367ns, stddev: 4121942ns
+verify 1: 790491140172ns, mean: 7904911401ns, stddev: 20365828ns
+round  2: 504057056012ns, mean: 5040570560ns, stddev: 6461035ns
+verify 2: 355886556ns, mean: 3558865ns, stddev: 171984ns
+round  3: 53793547196ns, mean: 537935471ns, stddev: 1378661ns
+verify 3: 1318909361084ns, mean: 13189093610ns, stddev: 45231688ns
+verify Z: 1242489315ns, mean: 12424893ns, stddev: 127203ns
+key calc: 23402125396ns, mean: 234021253ns, stddev: 699490ns
+
+overall results for n=17
+total number of failures: 0
+round  1: 350643930461ns, mean: 3506439304ns, stddev: 3662931ns
+verify 1: 896341909020ns, mean: 8963419090ns, stddev: 25352461ns
+round  2: 571222944968ns, mean: 5712229449ns, stddev: 6948778ns
+verify 2: 402620971ns, mean: 4026209ns, stddev: 147531ns
+round  3: 57325842302ns, mean: 573258423ns, stddev: 1856116ns
+verify 3: 1496186277263ns, mean: 14961862772ns, stddev: 49723572ns
+verify Z: 1321835383ns, mean: 13218353ns, stddev: 162932ns
+key calc: 25371676341ns, mean: 253716763ns, stddev: 668761ns
+
+overall results for n=18
+total number of failures: 0
+round  1: 392064693430ns, mean: 3920646934ns, stddev: 5073498ns
+verify 1: 1008424778827ns, mean: 10084247788ns, stddev: 31174676ns
+round  2: 642553920660ns, mean: 6425539206ns, stddev: 7408926ns
+verify 2: 451929652ns, mean: 4519296ns, stddev: 165705ns
+round  3: 60790046142ns, mean: 607900461ns, stddev: 1555499ns
+verify 3: 1682523681268ns, mean: 16825236812ns, stddev: 59055783ns
+verify Z: 1398100541ns, mean: 13981005ns, stddev: 186664ns
+key calc: 27389459590ns, mean: 273894595ns, stddev: 1351859ns
+
+overall results for n=19
+total number of failures: 0
+round  1: 435709212305ns, mean: 4357092123ns, stddev: 4689474ns
+verify 1: 1127164746531ns, mean: 11271647465ns, stddev: 29539268ns
+round  2: 718178804812ns, mean: 7181788048ns, stddev: 7269728ns
+verify 2: 504752658ns, mean: 5047526ns, stddev: 164538ns
+round  3: 64354478689ns, mean: 643544786ns, stddev: 1270323ns
+verify 3: 1880296730159ns, mean: 18802967301ns, stddev: 54530451ns
+verify Z: 1478033307ns, mean: 14780333ns, stddev: 217969ns
+key calc: 29510264869ns, mean: 295102648ns, stddev: 807141ns
+
+overall results for n=20
+total number of failures: 0
+round  1: 481771927558ns, mean: 4817719275ns, stddev: 4837456ns
+verify 1: 1252264144926ns, mean: 12522641449ns, stddev: 34221299ns
+round  2: 798107523393ns, mean: 7981075233ns, stddev: 8405999ns
+verify 2: 559243556ns, mean: 5592435ns, stddev: 168562ns
+round  3: 67809338471ns, mean: 678093384ns, stddev: 1882846ns
+verify 3: 2088732709216ns, mean: 20887327092ns, stddev: 66676260ns
+verify Z: 1553161624ns, mean: 15531616ns, stddev: 184347ns
+key calc: 31739347167ns, mean: 317393471ns, stddev: 1489041ns
+
