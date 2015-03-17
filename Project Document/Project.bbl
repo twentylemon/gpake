@@ -7,6 +7,13 @@ S.~M. Bellovin and M.~Merritt.
 \newblock In {\em Research in Security and Privacy, 1992. Proceedings., 1992
   IEEE Computer Society Symposium on}, pages 72--84. IEEE, 1992.
 
+\bibitem{BoMaPa00}
+V.~Boyko, P.~MacKenzie, and S.~Patel.
+\newblock Provably secure password-authenticated key exchange using
+  diffie-hellman.
+\newblock In {\em LNCS 1807,Springer-Verlag, Berlin}, pages 156--171. Eurocrypt
+  2000, 2000.
+
 \bibitem{HaRy2010}
 F.~Hao and P.~Ryan.
 \newblock {J-PAKE}: Authenticated key exchange without {PKI}.
