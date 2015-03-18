@@ -4,8 +4,8 @@
 S.~M. Bellovin and M.~Merritt.
 \newblock Encrypted key exchange: Password-based protocols secure against
   dictionary attacks.
-\newblock In {\em Research in Security and Privacy, 1992. Proceedings., 1992
-  IEEE Computer Society Symposium on}, pages 72--84. IEEE, 1992.
+\newblock In {\em 1992 IEEE Computer Society Symposium on Research in Security
+  and Privacy Proceedings}, pages 72--84. IEEE, 1992.
 
 \bibitem{BoMaPa00}
 V.~Boyko, P.~MacKenzie, and S.~Patel.
@@ -34,8 +34,10 @@ D.~Harkins.
   \url{http://datatracker.ietf.org/doc/draft-irtf-cfrg-dragonfly/?include_text=1}.
 
 \bibitem{Ja96}
-D.~P. Jablon.
-\newblock Strong password-only authenticated key exchange.
-\newblock {\em ACM Computer Communication Review}, 26(5):5--26, 1996.
+B.~Jaspan.
+\newblock Dual-workfactor encrypted key exchange: efficiently preventing
+  password chaining and dictionary attacks.
+\newblock In {\em Proceedings of the Sixth Annual USENIX Security Conference},
+  pages 43--50, July 1996.
 
 \end{thebibliography}
