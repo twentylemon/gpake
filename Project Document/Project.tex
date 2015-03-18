@@ -179,17 +179,20 @@ two party PAKE typically consists of proving each of the following four properti
 \item[]
 \end{itemize}
 
- Some PAKEs satisfy the additional requirement that an attacker not be allowed to impersonate other users to
- some fixed target after obtaining (through illicit means) password verification files for those users which 
- were stored by the target.  The schemes with this additional property are known as augmented PAKEs, although
- some (for instance, Hao et. al.~\cite{HaYiChSh15}) have argued that such a requirement is not useful as the
- low entropy of the password means that it will soon be discovered through an offline dictionary attack on the
- verification files.  Of the two party PAKEs we present, only PPK is an augmented scheme. \comment{IS THIS TRUE???}
+ These properties are illustrated in sub-Section~\ref{sec:JPAKE} when we outline proofs of these properties
+ for the J-PAKE protocol. Some PAKEs satisfy the additional requirement that an attacker not be 
+ allowed to impersonate other users to some fixed target after obtaining (through illicit means) password 
+ verification files for those users which were stored by the target.  The schemes with this additional property 
+ are known as augmented PAKEs, although some (for instance, Hao et. al.~\cite{HaYiChSh15}) have argued that 
+ such a requirement is not useful as the low entropy of the password means that it will soon be discovered 
+ through an offline dictionary attack on the verification files.  Of the two party PAKEs we present, only 
+ PPK is an augmented scheme. \comment{IS THIS TRUE???}
 
 \subsection{SPEKE}
 \input{sec-SPEKE}
 
 \subsection{J-PAKE} 
+\label{sec:JPAKE}
 \input{sec-JPAKE}
 
 \subsection{Dragonfly}
@@ -201,6 +204,7 @@ two party PAKE typically consists of proving each of the following four properti
 \input{sec-PPK}
 
 \subsection{Zero-Knowledge Proof Protocols}
+\label{sec:ZKP}
 \input{sec-ZKP}
 
 %%%%%%%%%%%%%%%%%%%%%
