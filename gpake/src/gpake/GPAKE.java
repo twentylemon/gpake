@@ -186,8 +186,8 @@ public class GPAKE {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         //speke();
         //jpake();
-        dragonfly();
-        //ppk();
+        //dragonfly();
+        ppk();
     }
 
     /**

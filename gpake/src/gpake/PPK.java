@@ -114,7 +114,11 @@ public class PPK implements PAKE {
             // rawKey is g^(x_i*x_j).
             BigInteger rawKey = group[i].m[pos].multiply(h1(i, pos, s).modPow(r, p).modInverse(p)).modPow(x, p);
             // Use a combination of both keys to establish the pairwise key.
-            rawKey = h3(i, pos, group[i].m[pos], m[i], rawKey, s).add(h3(pos, i, m[i], group[i].m[pos], rawKey, s)).mod(p);
+            
+            int low = Math.min(i, pos);
+            int high = Math.max(i, pos);
+            
+            rawKey = h3(low, high, group[low].m[high], group[high].m[low], rawKey, s).mod(p);
             pairwiseKeysMAC[i] = SHA256.get(rawKey, "MAC");
             pairwiseKeysKC[i] = SHA256.get(rawKey, "KC");
 
