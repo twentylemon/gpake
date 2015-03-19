@@ -7,6 +7,8 @@
 \usepackage{fullpage}
 \usepackage[pagebackref=false,bookmarksopen=false,colorlinks,citecolor=black,linkcolor=violet]{hyperref} 
 \usepackage{multirow,xcolor,pifont,varwidth}
+\usepackage{tikz}
+\usetikzlibrary{matrix,shapes,arrows,positioning,chains,calc}
 
 \newcommand{\comment}[1]{\marginpar{\color{red}{\Huge$*$}}\mbox{}{\sf\color{red}[#1]}}
 
@@ -139,6 +141,26 @@ Hao et. al.~\cite{HaYiChSh15} to be slightly inaccurate.
  \item[] Send Alice $\left[\alpha^{x_b}\right]_s$
  \item[]
  \end{itemize}
+
+\begin{figure}[h]
+    \begin{tikzpicture}
+        \matrix (m)[matrix of nodes, column sep=2cm, row sep=8mm, nodes={draw=none, anchor=center, text depth=0pt}]{
+            Alice                                       &                   & Bob                                       \\
+            randomly choose $x_a \in \mathbb{Z}_p^*$    & $[\alpha^{x_a}]_s$&                                           \\
+                                                        & $[\alpha^{x_b}]_s$& randomly choose $x_b \in \mathbb{Z}_p^*$  \\
+        };
+
+        % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);    % underline "Alice"
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);    % underline "Bob"
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-2-2.south west)--(m-2-2.south east); % arrow below sending alpha^x_a
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-3-2.south east)--(m-3-2.south west); % arrow below sending alpha^x_b
+    \end{tikzpicture}
+    % if you do not need a caption, there's no need for the `figure` enviroment, a `tikzpicture` will be placed where ever you put
+    % it in the code, unlike `figure` without [h] -- but you'll probably want a caption so these two lines are probably useless
+    \label{fig:pake}
+    \caption{A generic flow diagram for any PAKE protocol.}
+\end{figure}
 
 At the end, both Alice and Bob share the key $K = \alpha^{x_a \cdot x_b}$.  The weakness of the algorithm 
 comes from an issue discussed above: as the password has low entropy in order for the scheme to be 

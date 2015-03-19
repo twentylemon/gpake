@@ -215,7 +215,12 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
+# latex stuff
 *.aux
 *.out
 *.synctex.gz
 *.fdb_latexmk
+*.bbl
+*.blg
+
+
