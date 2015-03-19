@@ -218,3 +218,4 @@ pip-log.txt
 *.aux
 *.out
 *.synctex.gz
+*.fdb_latexmk
