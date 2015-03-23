@@ -8,6 +8,8 @@
 \usepackage[pagebackref=false,bookmarksopen=false,colorlinks,citecolor=black,linkcolor=violet]{hyperref} 
 \usepackage{multirow,xcolor,pifont,varwidth}
 \usepackage{tikz}
+
+
 \usetikzlibrary{matrix,shapes,arrows,positioning,chains,calc}
 
 \newcommand{\comment}[1]{\marginpar{\color{red}{\Huge$*$}}\mbox{}{\sf\color{red}[#1]}}
@@ -130,7 +132,7 @@ Hao et. al.~\cite{HaYiChSh15} to be slightly inaccurate.
  to show that such schemes can be achieved.  Due to its historical significance, we outline the Diffie-Hellman
  variant of the method here (an RSA variant, also by Bellovin and Merrit, was later shown to be insecure).  
  Given a symmetric encryption function $[\cdot]_s$ which uses a password $s$ shared
- by agents Alice and Bob as a key, the algorithm does the following: \comment{Do we want a better way of writing protocols?}\comment{Yi: Probably...}
+ by agents Alice and Bob as a key, the algorithm does the following:
  \\
 
  \begin{itemize}
@@ -210,12 +212,15 @@ two party PAKE typically consists of proving each of the following four properti
  through an offline dictionary attack on the verification files.  Nevertheless, augmented variants exist for a number
 of balanced PAKEs (for example Augmented-EKE for EKE, B-SPEKE for SPEKE and PAK-Z for PAK/PPK). 
 
-\subsection{SPEKE}
-\input{sec-SPEKE}
-
 \subsection{J-PAKE} 
 \label{sec:JPAKE}
 \input{sec-JPAKE}
+
+
+\subsection{SPEKE}
+\label{sec:SPEKE}
+\input{sec-SPEKE}
+
 
 \subsection{Dragonfly}
 \label{sec:Dragon}
