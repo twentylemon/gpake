@@ -34,7 +34,7 @@
 \title{Password Authenticated Key Exchange:\\ From Two Party Methods to Group Schemes}
 
 %\keywords{Lattice path enumeration, D-finite, diagonal, analytic
-%  combinatorics in several variables, Weyl chambers}
+%  combinatorics in several variables, Weyl chambers}   % seems legit
 
 
 \begin{document}
@@ -120,7 +120,7 @@ Hao et. al.~\cite{HaYiChSh15} to be slightly inaccurate.
  be known as the first PAKE.  All PAKEs aim for two main goals: to require their users to provide a zero 
  knowledge proof of a short password known to both parties \emph{a priori} (that is, before the protocol 
  has begun) and to leverage knowledge of this password to facilitate an authenticated key exchange.  As 
- password are assumed to be low entropy -- for instance, they are often assumed to be human memorizable 
+ password are assumed to be low entropy -- for instance, they are often assumed to be human memorable 
  passwords (typically assumed to be approximately 20-30 bits of entropy) -- if the passwords 
  themselves were broadcast they would need to be protected, for instance using SSL.  This would require Public 
  Key Infrastructure, which can be expensive, hence the use of zero knowledge proofs.
@@ -146,22 +146,21 @@ Hao et. al.~\cite{HaYiChSh15} to be slightly inaccurate.
 
 \begin{figure}[h]
     \begin{tikzpicture}
-        \matrix (m)[matrix of nodes, column sep=2cm, row sep=8mm, nodes={draw=none, anchor=center, text depth=0pt}]{
+        \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells]{
             Alice                                       &                   & Bob                                       \\
-            randomly choose $x_a \in \mathbb{Z}_p^*$    & $[\alpha^{x_a}]_s$&                                           \\
-                                                        & $[\alpha^{x_b}]_s$& randomly choose $x_b \in \mathbb{Z}_p^*$  \\
+            randomly choose $x_a \in \mathbb{Z}_p^*$    &                   & randomly choose $x_b \in \mathbb{Z}_p^*$  \\
+                                                        & $[\alpha^{x_a}]_s$&                                           \\
+                                                        & $[\alpha^{x_b}]_s$&                                           \\
         };
 
         % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
         \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);    % underline "Alice"
         \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);    % underline "Bob"
-        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-2-2.south west)--(m-2-2.south east); % arrow below sending alpha^x_a
-        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-3-2.south east)--(m-3-2.south west); % arrow below sending alpha^x_b
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-3-2.south west)--(m-3-2.south east); % arrow below sending alpha^x_a
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-4-2.south east)--(m-4-2.south west); % arrow below sending alpha^x_b
     \end{tikzpicture}
-    % if you do not need a caption, there's no need for the `figure` enviroment, a `tikzpicture` will be placed where ever you put
-    % it in the code, unlike `figure` without [h] -- but you'll probably want a caption so these two lines are probably useless
-    \label{fig:pake}
     \caption{A generic flow diagram for any PAKE protocol.}
+    \label{fig:pake}
 \end{figure}
 
 At the end, both Alice and Bob share the key $K = \alpha^{x_a \cdot x_b}$.  The weakness of the algorithm 
