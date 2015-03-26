@@ -5,7 +5,7 @@ suite, using the Fairy Ring Dance construction from~\cite{HaYiChSh15}. The PPK+ 
 broadcasts $m_{ij} = g^{x_i}\cdot (H_1(i, j, \pi))^r$ for all $j \neq i$ as well as $g^{y_i}$ together with a 
 zero-knowledge proof, denoted as ZKP\{$y_i$\}, for proving the knowledge of the exponent $y_i$.
 
-We define $z_i = y_{i+1} - y_{i-1}$. Then everyone is ale to compute $g^{z_i} = g^{y_{i+1}}/g^{y_{i-1}}$. 
+We define $z_i = y_{i+1} - y_{i-1}$. Then everyone is able to compute $g^{z_i} = g^{y_{i+1}}/g^{y_{i-1}}$. 
 Every participant $P_i$ also computes $\sigma_{ij} = \left(\frac{m_{ji}}{H_1(j,i,\pi)^r}\right)^{x_i} = g^{x_i x_j}$
 and checks:
 \begin{itemize}
