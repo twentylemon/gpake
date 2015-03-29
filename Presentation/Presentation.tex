@@ -122,7 +122,7 @@
   Cannot broadcast password directly -- would need to be protected (expensive)
   \vspace{0.5in}
 
-  Instead, modern PAKEs use \emph{zero-knowledge proof} of password in protocol
+  Instead, modern PAKEs use \emph{zero-knowledge proof} and/or \emph{hash} of password in protocol
 }
 
 \frame{  
@@ -224,12 +224,58 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 }
 
 \frame{  
-  \frametitle{PAK/PPK}
-  Desciption of protocol
-  \vspace{0.3in}
+  \frametitle{PAK/PPK -- PAK}
 
-  Security properties
+   \begin{itemize}
+ \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
+ \item[] Let $p = rq+1$ where $r, q$ relatively prime.
+ \item[] Let $\pi$ be the password and $H_1, H_{2a}, H_{2b}, H_3$ be random, independent hash functions.
+ \item[]\pause
+ \item[\textbf{PAK}]
+ \item[]
+ \begin{center}
+ \includegraphics[scale = 0.26]{pak_protocol.png}
+ \end{center}
+ \end{itemize}
+
+}
+
+
+
+\frame{  
+  \frametitle{PAK/PPK -- PPK}
+
+   \begin{itemize}
+    \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
+ \item[] Let $p = rq+1$ where $r, q$ relatively prime.
+ \item[] Let $\pi$ be the password and $H_1, H_3$ be random, independent hash functions.
+ \item[]\pause
+ \item[\textbf{PPK}]
+ \item[]
+ \begin{center}
+ \includegraphics[scale = 0.23]{ppk_protocol.png}
+ \end{center}
+ \end{itemize}
+ 
+}
+
+\frame{  
+  \frametitle{PAK/PPK}
   
+  Proposes a new formal security model\\
+  based on the random oracle model
+  \vspace{0.4in}
+  
+   Satisfies all 4 desired properties \\
+   (under DDH assumptions)
+   \vspace{0.4in}
+
+   Only two/three rounds of communication
+   \vspace{0.4in}
+
+   PAK has explicit key confirmation\\
+   PPK has implicit key confirmation
+
 }
 
 
