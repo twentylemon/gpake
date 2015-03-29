@@ -222,5 +222,9 @@ pip-log.txt
 *.fdb_latexmk
 *.bbl
 *.blg
+*.nav
+*.snm
+*.toc
+
 
 
