@@ -12,7 +12,7 @@ The construction follows the Dragonfly protocol closely, with only minor modific
 and of course adding the final round to establish the group key. The setup is the same as Dragonfly (see Section \ref{sec:Dragon}),
 except the generator of the subgroup $Q$ is required, called $g$. The Dragonfly+ protocol executes as follows:
 
-\emph{Preamble}: Every participant $P_i$ have a shared password which they map to an element $\pi \in Q$.
+\emph{Setup}: Every participant $P_i$ have a shared password which they map to an element $\pi \in Q$.
 
 \emph{Round 1}: Every participant selects $r_{ij}, m_{ij} \in_R \mathbb{Z}_q^*$ for all $j \in \{1,\ldots,n\} \setminus \{i\}$.
 They each compute $s_{ij} = r_{ij} + m_{ij} \mod q$ and the element $E_{ij} = \pi^{-m_{ij}} \mod p$. If any $s_{ij} < 2$, start this step over.

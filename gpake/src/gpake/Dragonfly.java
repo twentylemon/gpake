@@ -266,6 +266,8 @@ public class Dragonfly implements PAKE {
             mac.update("KC".getBytes());
             mac.update(new BigInteger(String.valueOf(first.pos)).toByteArray());
             mac.update(new BigInteger(String.valueOf(second.pos)).toByteArray());
+            mac.update(first.E[second.pos].toByteArray());
+            mac.update(second.E[first.pos].toByteArray());
             //@todo security
             return new BigInteger(mac.doFinal());
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException ex){
