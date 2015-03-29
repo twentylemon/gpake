@@ -364,7 +364,7 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 \begin{frame}{Dragonfly+}
     \begin{itemize}
         \item[\textbf{Rd 2}] Each member computes their pairwise shared secrets: $ss_{ij} = (\pi^{s_{ji}} E_{ji})^{r_{ij}}$
-        \item[] Each member broadcasts $H(ss || E_{ij} || s_{ij} || E_{ji} || s_{ji})$
+        \item[] Each member broadcasts $H(ss_{ij} || E_{ij} || s_{ij} || E_{ji} || s_{ji})$
         \item[] [All members verify the pairwise hash values]
         
         \item<2->[\textbf{Rd 3}] Every member broadcasts $(g^{z_i})^{y_i}$ and $\text{ZKP}\{\tilde{y_i}\}$.
