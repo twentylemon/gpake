@@ -70,11 +70,13 @@
 
 
 \title{Password Authenticated Key Exchange:\\ From Two Party Methods to Group Schemes \vspace{-0.2in}}
-\author{Stephen Melczer, Taras Mychaskiw, and Yi Zhang}
-\date{}
+\author{Stephen Melczer, Taras Mychaskiw, and Yi Zhang \vspace{-0.2in}}
+\date{\small Based on: The Fairy-Ring Dance -- Password Authenticated Key Exchange in a Group 
+by Hao, Yi, Chen, and Shahandashti }
 
 \begin{document}
 \frame{\titlepage}
+
 
 
 
@@ -89,14 +91,13 @@
   		\begin{enumerate}
   		\item Background and Security Properties
   		\item J-PAKE
-  		\item Dragonfly
-  		\item PAK/PPK
+  		\item Dragonfly and PPK
   		\end{enumerate}
   \item[]
   \item Extension to Group Setting (GPAKEs)
   		\begin{enumerate}
   		\item Fairy-Ring Dance
-  		\item Examples of GPAKEs
+  		\item J-PAKE+
   		\end{enumerate}
     \item[]
   \item Timings
@@ -122,7 +123,7 @@
   Cannot broadcast password directly -- would need to be protected (expensive)
   \vspace{0.5in}
 
-  Instead, modern PAKEs use \emph{zero-knowledge proof} and/or \emph{hash} of password in protocol
+  Instead, modern PAKEs use \emph{zero-knowledge proof}, \emph{exponentiation}, or \emph{hash} of expression w/ password
 }
 
 \frame{  
@@ -177,8 +178,30 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 
 }
 
+\frame{  
+  \frametitle{J-PAKE (Hao and Ryan 2010)}
+
+   \begin{itemize}
+ \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
+ \item[] Alice picks $x_1 \in_R [0,q-1]$ and $x_2 \in_R [1,q-1]$
+ \item[] Bob picks \hspace{0.015in} $x_3 \in_R [0,q-1]$ and $x_4 \in_R [1,q-1]$
+ \item[]\pause
+ \item[\textbf{Rd 1}] Alice sends $g^{x_1},g^{x_2}$ and ZKPs of $x_1$ and $x_2$ to Bob
+ \item[] Bob sends $g^{x_3},g^{x_4}$ and ZKPs of $x_3$ and $x_4$ to Alice
+ \item[] [Alice and Bob verify ZKPs and $g^{x_2},g^{x_4} \neq 1$]
+ \item[]\pause
+ \item[\textbf{Rd 2}] Alice sends $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and ZKP of $x_2 s$
+ \item[] Bob sends $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and ZKP of $x_4 s$
+ \item[] \pause
+ \end{itemize}
+  
+  They share
+  \[ K = \underbrace{\left(B / g^{x_2x_4 s} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4s} = 
+ \underbrace{\left(A / g^{x_2x_4 s} \right)^{x_4}}_\text{Computable by Bob}. \]
+}
+
  \frame{  
-   \frametitle{J-PAKE}
+   \frametitle{J-PAKE (Hao and Ryan 2010)}
 
    \begin{figure}[h]
     \begin{tikzpicture}[scale=0.45, every node/.style={scale=0.45}]
@@ -204,38 +227,14 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
         \draw[shorten <=-0.2cm,shorten >=-0.2cm,-latex] (m-8-2.south east)--(m-8-2.south west);   % arrow below sending B
     \end{tikzpicture}
     \vspace{0.3in}
-
-    Original uses Schnorr ZKPs
 \end{figure}
 
 }
 
-% \frame{  
-%   \frametitle{J-PAKE}
-
-%    \begin{itemize}
-%  \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
-%  \item[] Alice picks $x_1 \in_R [0,q-1]$ and $x_2 \in_R [1,q-1]$
-%  \item[] Bob picks $x_3 \in_R [0,q-1]$ and $x_4 \in_R [1,q-1]$
-%  \item[]\pause
-%  \item[\textbf{Rd 1}] Alice sends $g^{x_1},g^{x_2}$ and ZKPs of $x_1$ and $x_2$ to Bob
-%  \item[] Bob sends $g^{x_3},g^{x_4}$ and ZKPs of $x_3$ and $x_4$ to Alice
-%  \item[] [Alice and Bob verify ZKPs and $g^{x_2},g^{x_4} \neq 1$]
-%  \item[]\pause
-%  \item[\textbf{Rd 2}] Alice sends $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and ZKP of $x_2 s$
-%  \item[] Bob sends $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and ZKP of $x_4 s$
-%  \item[] \pause
-%  \end{itemize}
-  
-%   They share
-%   \[ K = \underbrace{\left(B / g^{x_2x_4 s} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4s} = 
-%  \underbrace{\left(A / g^{x_2x_4 s} \right)^{x_4}}_\text{Computable by Bob}. \]
-% }
-
 \frame{  
-  \frametitle{J-PAKE}
-   Satisfies all 4 desired properties \\
-   (under DSDH assumptions)
+  \frametitle{J-PAKE (Hao and Ryan 2010)}
+   Satisfies all 4 desired properties (under DSDH assumption) \\
+   More robust security proof in 2015
    \vspace{0.4in}
 
    Only two rounds of communication
@@ -244,125 +243,42 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
    No \emph{explicit} key confirmation (only implicit)
    \vspace{0.4in}
 
-   Not patented
+   Not patented (ISO/IEC 11770-4 standard)
 }
 
-%\frame{  
-%  \frametitle{Dragonfly}
-%  \begin{itemize}
-%    \item[\textbf{Setup}] Let $Q$ be a cyclic subgroup of $\mathbb{Z}_p^*$ with prime order $q$.
-%    \item[] Alice picks $r_A, m_A \in_R \mathbb{Z}_q^*$
-%    \item[] Bob picks $r_B, m_B \in_R \mathbb{Z}_q^*$
-%    \item<2->[\textbf{Rd 1}] Alice sends $s_A = r_A + m_A \mod q$ and $E_A = \pi^{-m_A} \mod p$
-%    \item<2->[] Bob sends $s_B = r_B + m_B \mod q$ and $E_B = \pi^{-m_B} \mod p$
-%    \item<2->[] [Alice and Bob check that $s_A \neq s_B$ or $E_A \neq E_B$]
-%    \item<3->[\textbf{Rn 2}] Alice computes $ss = (\pi^{s_B} E_B)^{r_A} = \pi^{r_A r_B}$
-%    \item<3->[] Bob computes $ss = (\pi^{s_A} E_A)^{r_B} = \pi^{r_A r_B}$
-%    \item<3->[] Alice sends $H(ss | E_A | s_A | E_B | s_B)$
-%    \item<3->[] Bob sends $H(ss | E_B | s_B | E_A | s_A)$
-%    \item<3->[] Each member confirms the hashes.
-%  \end{itemize}
-%  \uncover<4>{
-%      They share:
-%      \[ K = H(ss | E_A \times E_B | (s_A + s_B) \mod q) \]
-%  }
-%}
-
-\begin{frame}{Dragonfly}
-  \begin{itemize}
-    \item[\textbf{Setup}] Let $Q$ be a cyclic subgroup of $\mathbb{Z}_p^*$ with prime order $q$. Both members map the password to an element $\pi \in Q$.
-  \end{itemize}
-  \vspace{0.2in}
+\frame{  
+  \frametitle{PAK/PPK (Boyko, MacKenzie, and Patel 2000)}
+  Alternative PAKE, via hashing password with random elements and powering \\
+   \vspace{0.3in}
   
-  \uncover<2>{
-    \scalebox{0.6}{
-    \begin{tikzpicture}
-        \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells,ampersand replacement=\&]{
-            Alice                                           \&                   \& Bob                                           \\
-            repeat: randomly choose $r_A, m_A \in \mathbb{Z}_q^*$   \&   \& repeat: randomly choose $r_B, m_B \in \mathbb{Z}_q^*$ \\
-            $s_A = r_A + m_A \mod q$ until $s_A \geq 2$     \&                   \& $s_B = r_B + m_B \mod q$ until $s_B \geq 2$   \\
-            $E_A = \pi^{-m_A} \mod p$                       \& $s_A, E_A$        \& $E_B = \pi^{-m_B} \mod p$                     \\
-                                                            \& $s_B, E_B$        \&                                               \\
-                                                            \&                   \&                                               \\
-            Verify $E_A \neq E_B$ or $s_A \neq s_B$         \&                   \& Verify $E_A \neq E_B$ or $s_A \neq s_B$       \\
-            $ss = (\pi^{s_B} E_B)^{r_A} = \pi^{r_A r_B}$    \&                   \& $ss = (\pi^{s_A} E_A)^{r_B} = \pi^{r_A r_B}$  \\
-            $A = H(ss | E_A | s_A | E_B | s_B)$             \& $A$               \& $B = H(ss | E_B | s_B | E_A | s_A)$           \\
-                                                            \& $B$               \&                                               \\
-            Verify $B$                                      \&                   \& Verify $A$                                    \\
-            $K = H(ss | E_A \times E_B | (s_A + s_B) \mod q)$  \&           \& $K = H(ss | E_A \times E_B | (s_A + s_B) \mod q)$  \\
-        };
-        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);        % underline "Alice"
-        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);        % underline "Bob"
-        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-4-2.south west)--(m-4-2.south east);     % arrow below sending s_A, E_A
-        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-5-2.south east)--(m-5-2.south west);     % arrow below sending s_B, E_B
-        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-9-2.south west)--(m-9-2.south east);     % arrow below sending A
-        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-10-2.south east)--(m-10-2.south west);   % arrow below sending B
-      \end{tikzpicture}
-    }}
-\end{frame}
-
-\begin{frame}{Dragonfly}
-   No formal security proofs, but claims resistance to offline dictionary attacks
-   \vspace{0.4in}
-
-   Only two rounds of communication
-   \vspace{0.4in}
-
-   Very fast compared to other protocols
-\end{frame}
-
-\frame{  
-  \frametitle{PAK/PPK -- PAK}
-
-   \begin{itemize}
- \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
- \item[] Let $p = rq+1$ where $r, q$ relatively prime.
- \item[] Let $\pi$ be the password and $H_1, H_{2a}, H_{2b}, H_3$ be random, independent hash functions.
- \item[]\pause
- \item[\textbf{PAK}]
- \item[]
- \begin{center}
- \includegraphics[scale = 0.26]{pak_protocol.png}
- \end{center}
- \end{itemize}
-
-}
-
-\frame{  
-  \frametitle{PAK/PPK -- PPK}
-
-   \begin{itemize}
-    \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
- \item[] Let $p = rq+1$ where $r, q$ relatively prime.
- \item[] Let $\pi$ be the password and $H_1, H_3$ be random, independent hash functions.
- \item[]\pause
- \item[\textbf{PPK}]
- \item[]
- \begin{center}
- \includegraphics[scale = 0.23]{ppk_protocol.png}
- \end{center}
- \end{itemize}
- 
-}
-
-\frame{  
-  \frametitle{PAK/PPK}
-  
-  Proposes a new formal security model\\
-  based on the random oracle model
-  \vspace{0.4in}
+  Proposes `simulation model' to prove security (under DDH \& random oracle)
+  \vspace{0.3in}
   
    Satisfies all 4 desired properties \\
-   (under DDH assumptions)
-   \vspace{0.4in}
+   \vspace{0.3in}
 
    Only two/three rounds of communication
-   \vspace{0.4in}
+   \vspace{0.3in}
 
    PAK has explicit key confirmation\\
    PPK has implicit key confirmation
-
 }
+
+\begin{frame}{Dragonfly (Harkins 2012)}
+   Alternative PAKE, using discrete log / CDH assumption \\
+   (IEEE Std 802.11-2012)
+   \vspace{0.3in}
+
+   No formal security proofs, but claims resistance to `active attacks, passive attacks, and off-line
+   dictionary attacks' \\ 
+   (previously attacked, but upgraded)
+   \vspace{0.3in}
+
+   Only two rounds of communication
+   \vspace{0.3in}
+
+   Very fast compared to other protocols
+\end{frame}
 
 \frame{  
   \frametitle{Comparisons}
@@ -391,14 +307,14 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
   
   \pause
   \textbf{For pair-wise key:}\\
-  Use plain two-party PAKE protocols. (Need at least 2 rounds)
+  Use plain two-party PAKE protocols
   
   \vspace{0.2in}
   
   \pause
   \textbf{For group key:}\\
   \begin{itemize}
-  \item Everyone additionally choose another random $y_i \in_R \mathbb{Z}_q$ and broadcast $g^{y_i}$
+  \item Everyone additionally choose another random $y_i \in_R \mathbb{Z}_q$ and broadcast $g^{y_i}$ w/ ZKP
   \item Everyone can calculate $g^{z_i} := g^{y_{i+1} - y_{i-1}} = g^{y_{i+1}}/g^{y_{i-1}}$
   \end{itemize}
   
@@ -406,42 +322,48 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
   Group key:
   \begin{align}
   \label{groupkey}
-  K_i &= (g^{y_{i-1}})^{ny_i} \cdot (y^{z_iy_i})^{n-1} \cdot (y^{z_{i+1}y_{i+1}})^{n-2} \cdots (g^{z_{i_2}y_{i-2}})\\
+  K_i &= (g^{y_{i-1}})^{ny_i} \cdot (y^{z_iy_i})^{n-1} \cdot (y^{z_{i+1}y_{i+1}})^{n-2} \cdots (g^{z_{i-2}y_{i-2}})\\
   &= g^{y_1y_2+y_2y_3+\cdots+y_ny_1}
   \end{align}  
 }
 
-\begin{frame}{Dragonfly+}
+\begin{frame}{JPAKE+}
     \begin{itemize}
-        \item[\textbf{Setup}] Let $Q$ be a cyclic subgroup of $\mathbb{Z}_p^*$ with prime order $q$ with generator $g$.
-            Each member maps the password to an element $\pi \in Q$.
-        \item[] Every member $P_i$ chooses $r_{ij}, m_{ij} \in_R \mathbb{Z}_q^*$ for all $j \in \{1,\ldots,n\} \setminus \{i\}$
-        \item[] Each member also chooses $y_i \in_R \mathbb{Z}_q$ and computes $g^{y_i} \mod p$
-        
-        \item<2->[\textbf{Rd 1}] Each member broadcasts $s_{ij} = r_{ij} + m_{ij} \mod q$ and $E_{ij} = \pi^{-m_{ij}} \mod p$
-        \item<2->[] They also broadcast $g_{y_i} \mod p$ along with $\text{ZKP}\{y_i\}$
-        \item<2->[] [All members verify the ZKP, verify $g_{z_i} \neq 1$ and check for reflection attacks]
+        \item[\textbf{Setup}]  Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
+        \item[] \pause
+        \item[\textbf{Rd 1}] $P_i$ chooses, for all $j \neq i$
+        \[ a_{ij} \in_R \mathbb{Z}_q \qquad\qquad b_{ij} \in_R \mathbb{Z}_q^* \qquad\qquad y_i \in_R \mathbb{Z}_q, \]
+        \item[] and broadcasts
+        \[ g^{a_{ij}} \qquad g^{b_{ij}} \qquad g^{y_i} \qquad \text{ZKP}(a_{ij}) \quad \text{ZKP}(b_{ij}) \quad \text{ZKP}(y_{i}). \]
+        \item[] After, $P_i$ checks ZKPs and
+        \[ g^{z_i} = g^{y_{i+1}}/ g^{y_{i-1}} \neq 1, \qquad g^{b_{ji}} \neq 1\] \pause
+        \item[\textbf{Rd 2}]  $P_i$ computes and broadcasts, for $j \neq i$
+        \[ \beta_{ij} := \left(g^{a_{ij} + a_{ji} + b_{ji}}\right)^{b_{ij}\cdot s}  \qquad \qquad \text{ZKP}(b_{ij}\cdot s)\]
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Dragonfly+}
+\begin{frame}{JPAKE+}
     \begin{itemize}
-        \item[\textbf{Rd 2}] Each member computes their pairwise shared secrets: $ss_{ij} = (\pi^{s_{ji}} E_{ji})^{r_{ij}}$
-        \item[] Each member broadcasts $H(ss_{ij} || E_{ij} || s_{ij} || E_{ji} || s_{ji})$
-        \item[] [All members verify the pairwise hash values]
-        
-        \item<2->[\textbf{Rd 3}] Every member broadcasts $(g^{z_i})^{y_i}$ and $\text{ZKP}\{\tilde{y_i}\}$.
-        \item<2->[] Let $K_{ij}$ be the pairwise Dragonfly key between members $i$ and $j$. Members compute
-            $\kappa_{ij}^{MAC} = H(K_{ij} || "MAC"), \kappa_{ij}^{KC} = H(K_{ij} || "KC")$
-        \item<2->[] Members broadcast $t_{ij}^{MAC} = HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\})$
-            and $t_{ij}^{KC} = HMAC(\kappa_{ij}^{KC}, "KC" || i || j || E_{ij} || E_{ji})$
-        \item<2->[] [All members verify $\text{ZKP}\{\tilde{y_i}\}$, $t_{ji}^{MAC}$ and $t_{ij}^{KC}$ are correct]
+        \item[\textbf{Rd 3}] Every $P_i$ broadcasts
+          \[ (g^{z_i})^{y_i} \text{ and } \text{ZKP}\{\tilde{y_i}\}. \]
+        \item[] Let $K_{ij} := (\beta_{ji}/g^{b_{ij} \cdot b_{ji} \cdot s})^{b_{ij}} = $ pairwise JPAKE key \pause
+        \item[]
+        \item Members compute
+          \[ \kappa_{ij}^{MAC} = H(K_{ij} || `MAC') \qquad \kappa_{ij}^{KC} = H(K_{ij} || `KC') \pause \] 
+        \item Members broadcast 
+        \begin{align*}
+        t_{ij}^{MAC} &= HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\})\\
+        t_{ij}^{KC} &= HMAC(\kappa_{ij}^{KC}, `KC' || i || j || g^{a_{ij}} || g^{b_{ij}} || g^{a_{ji}} || g^{b_{ji}})
+        \end{align*}
     \end{itemize}
-    \uncover<3>{
-        All members share:
-            \[ K = g^{y_1 \cdot y_2 + y_2 \cdot y_3 + \cdots + y_n \cdot y_1} \]
-    }
+    
+    All members share $K = g^{y_1 \cdot y_2 + y_2 \cdot y_3 + \cdots + y_n \cdot y_1}$
 \end{frame}
+
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Timings
@@ -497,7 +419,7 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
   \item[]
   \item[] SPEKE+ is very slow
   \item[]
-  \item[] J-PAKE+ is a bit slow, but proven secure (under DSDH)
+  \item[] J-PAKE+ is a bit slow, but `proven' secure (under DSDH)
   \item[]
   \item[] PPK is faster 
   \item[]
@@ -511,6 +433,135 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 \frame{
   \frametitle{\vspace{1.1in} \begin{center} THANK YOU \end{center}}
 }
+
+
+%\frame{  
+%  \frametitle{Dragonfly}
+%  \begin{itemize}
+%    \item[\textbf{Setup}] Let $Q$ be a cyclic subgroup of $\mathbb{Z}_p^*$ with prime order $q$.
+%    \item[] Alice picks $r_A, m_A \in_R \mathbb{Z}_q^*$
+%    \item[] Bob picks $r_B, m_B \in_R \mathbb{Z}_q^*$
+%    \item<2->[\textbf{Rd 1}] Alice sends $s_A = r_A + m_A \mod q$ and $E_A = \pi^{-m_A} \mod p$
+%    \item<2->[] Bob sends $s_B = r_B + m_B \mod q$ and $E_B = \pi^{-m_B} \mod p$
+%    \item<2->[] [Alice and Bob check that $s_A \neq s_B$ or $E_A \neq E_B$]
+%    \item<3->[\textbf{Rn 2}] Alice computes $ss = (\pi^{s_B} E_B)^{r_A} = \pi^{r_A r_B}$
+%    \item<3->[] Bob computes $ss = (\pi^{s_A} E_A)^{r_B} = \pi^{r_A r_B}$
+%    \item<3->[] Alice sends $H(ss | E_A | s_A | E_B | s_B)$
+%    \item<3->[] Bob sends $H(ss | E_B | s_B | E_A | s_A)$
+%    \item<3->[] Each member confirms the hashes.
+%  \end{itemize}
+%  \uncover<4>{
+%      They share:
+%      \[ K = H(ss | E_A \times E_B | (s_A + s_B) \mod q) \]
+%  }
+%}
+\begin{frame}{Dragonfly}
+ \begin{itemize}
+   \item[\textbf{Setup}] Let $Q$ be a cyclic subgroup of $\mathbb{Z}_p^*$ with prime order $q$. Both members map the password to an element $\pi \in Q$.
+ \end{itemize}
+ \vspace{0.2in}
+ 
+ \uncover<2>{
+   \scalebox{0.6}{
+   \begin{tikzpicture}
+       \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells,ampersand replacement=\&]{
+           Alice                                           \&                   \& Bob                                           \\
+           repeat: randomly choose $r_A, m_A \in \mathbb{Z}_q^*$   \&   \& repeat: randomly choose $r_B, m_B \in \mathbb{Z}_q^*$ \\
+           $s_A = r_A + m_A \mod q$ until $s_A \geq 2$     \&                   \& $s_B = r_B + m_B \mod q$ until $s_B \geq 2$   \\
+            $E_A = \pi^{-m_A} \mod p$                       \& $s_A, E_A$        \& $E_B = \pi^{-m_B} \mod p$                     \\
+                                                            \& $s_B, E_B$        \&                                               \\
+                                                            \&                   \&                                               \\
+            Verify $E_A \neq E_B$ or $s_A \neq s_B$         \&                   \& Verify $E_A \neq E_B$ or $s_A \neq s_B$       \\
+            $ss = (\pi^{s_B} E_B)^{r_A} = \pi^{r_A r_B}$    \&                   \& $ss = (\pi^{s_A} E_A)^{r_B} = \pi^{r_A r_B}$  \\
+            $A = H(ss | E_A | s_A | E_B | s_B)$             \& $A$               \& $B = H(ss | E_B | s_B | E_A | s_A)$           \\
+                                                            \& $B$               \&                                               \\
+            Verify $B$                                      \&                   \& Verify $A$                                    \\
+            $K = H(ss | E_A \times E_B | (s_A + s_B) \mod q)$  \&           \& $K = H(ss | E_A \times E_B | (s_A + s_B) \mod q)$  \\
+        };
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);        % underline "Alice"
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);        % underline "Bob"
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-4-2.south west)--(m-4-2.south east);     % arrow below sending s_A, E_A
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-5-2.south east)--(m-5-2.south west);     % arrow below sending s_B, E_B
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-9-2.south west)--(m-9-2.south east);     % arrow below sending A
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-10-2.south east)--(m-10-2.south west);   % arrow below sending B
+      \end{tikzpicture}
+    }}
+\end{frame}
+
+\begin{frame}{Dragonfly+}
+    \begin{itemize}
+        \item[\textbf{Setup}] Let $Q = < \hspace{-0.03in} g \hspace{-0.03in} > \subset \mathbb{Z}_p^*$ w/ order $q$ and $\pi \in Q$
+        \item[] Every $P_i$ chooses 
+        \begin{align*} 
+        r_{ij}, m_{ij} &\in_R \mathbb{Z}_q^* \qquad \forall j\neq i\\
+        y_i &\in_R \mathbb{Z}_q
+        \end{align*}
+        \item[] and computes $g^{y_i}$ mod $p$
+        \item[]
+        \item<2->[\textbf{Rd 1}] Every $P_i$ broadcasts 
+        \begin{align*} 
+        s_{ij} &:= r_{ij} + m_{ij} \mod q \\
+        E_{ij} &:= \pi^{-m_{ij}} \mod p \\
+        &g^{y_i} \mod p \\ 
+        &\text{ZKP}\{y_i\}
+        \end{align*}
+        \item<2->[] [All verify ZKP, $g^{z_i} \neq 1$ and check for reflection attacks]
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Dragonfly+}
+    \begin{itemize}
+        \item[\textbf{Rd 2}] Each member computes pairwise shared secrets:
+        \[ ss_{ij} = (\pi^{s_{ji}} E_{ji})^{r_{ij}} \]
+        \item[] Each member broadcasts 
+        \[ H(ss_{ij} || E_{ij} || s_{ij} || E_{ji} || s_{ji}) \]
+        
+        \item<2->[\textbf{Rd 3}] Every member broadcasts
+          \[ (g^{z_i})^{y_i} \text{ and } \text{ZKP}\{\tilde{y_i}\}. \]
+        \item<3->[] Let $K_{ij} := $ pairwise Dragonfly key. Members compute
+            \[ \kappa_{ij}^{MAC} = H(K_{ij} || `MAC') \qquad \kappa_{ij}^{KC} = H(K_{ij} || `KC') \]
+        \item<4->[] Members broadcast 
+        \begin{align*}
+        t_{ij}^{MAC} &= HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\})\\
+        t_{ij}^{KC} &= HMAC(\kappa_{ij}^{KC}, `KC' || i || j || E_{ij} || E_{ji})
+        \end{align*}
+    \end{itemize}
+    \uncover<5>{All members share $K = g^{y_1 \cdot y_2 + y_2 \cdot y_3 + \cdots + y_n \cdot y_1}$}
+\end{frame}
+
+\frame{  
+  \frametitle{PAK}
+
+   \begin{itemize}
+ \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
+ \item[] Let $p = rq+1$ where $r, q$ relatively prime.
+ \item[] Let $\pi$ be the password and $H_1, H_{2a}, H_{2b}, H_3$ be random, independent hash functions.
+ \item[]\pause
+ \item[\textbf{PAK}]
+ \item[]
+ \begin{center}
+ \includegraphics[scale = 0.26]{pak_protocol.png}
+ \end{center}
+ \end{itemize}
+}
+\frame{  
+  \frametitle{PPK}
+
+   \begin{itemize}
+    \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
+ \item[] Let $p = rq+1$ where $r, q$ relatively prime.
+ \item[] Let $\pi$ be the password and $H_1, H_3$ be random, independent hash functions.
+ \item[]\pause
+ \item[\textbf{PPK}]
+ \item[]
+ \begin{center}
+ \includegraphics[scale = 0.23]{ppk_protocol.png}
+ \end{center}
+ \end{itemize}
+}
+
+
+
 
 \end{document}
 
