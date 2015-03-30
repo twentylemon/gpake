@@ -386,10 +386,29 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 
 \frame{  
   \frametitle{The Fairy-Ring Dance}
-  Desciption of general procedure
-  \vspace{0.3in}
-
-  How pairwise + group keys are constructed
+  Group members establish the group key and the pair-wise keys simultaneously.
+  \vspace{0.2in}
+  
+  \pause
+  \textbf{For pair-wise key:}\\
+  Use plain two-party PAKE protocols. (Need at least 2 rounds)
+  
+  \vspace{0.2in}
+  
+  \pause
+  \textbf{For group key:}\\
+  \begin{itemize}
+  \item Everyone additionally choose another random $y_i \in_R \mathbb{Z}_q$ and broadcast $g^{y_i}$
+  \item Everyone can calculate $g^{z_i} := g^{y_{i+1} - y_{i-1}} = g^{y_{i+1}}/g^{y_{i-1}}$
+  \end{itemize}
+  
+  \pause
+  Group key:
+  \begin{align}
+  \label{groupkey}
+  K_i &= (g^{y_{i-1}})^{ny_i} \cdot (y^{z_iy_i})^{n-1} \cdot (y^{z_{i+1}y_{i+1}})^{n-2} \cdots (g^{z_{i_2}y_{i-2}})\\
+  &= g^{y_1y_2+y_2y_3+\cdots+y_ny_1}
+  \end{align}  
 }
 
 \begin{frame}{Dragonfly+}
