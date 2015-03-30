@@ -7,18 +7,40 @@ $[a,b]$ is notation meaning the elements of $\mathbb{Z}^*$ between $a$ and $b$: 
 
 The protocol consists of a setup round followed by two rounds of communication (for details on zero knowledge
 proofs see sub-Section~\ref{sec:ZKP} -- in our implementation detailed later the XXX ZKP is used \comment{Which? Schnorr?}):
- \begin{itemize}
- \item[\textbf{Setup}] Alice picks $x_1 \in [0,q-1]$ and $x_2 \in [1,q-1]$ randomly
- \item[] Bob picks $x_3 \in [0,q-1]$ and $x_4 \in [1,q-1]$ randomly
- \item[]
- \item[\textbf{Round 1}] Alice sends $g^{x_1},g^{x_2}$ and zero knowledge proofs of $x_1$ and $x_2$ to Bob
- \item[] Bob sends $g^{x_3},g^{x_4}$ and zero knowledge proofs of $x_3$ and $x_4$ to Alice
- \item[] [Alice and Bob verify the knowledge proofs and that $g^{x_2},g^{x_4} \neq 1$]
- \item[]
- \item[\textbf{Round 2}] Alice sends $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and a zero knowledge proof of $x_2 s$
- \item[] Bob sends $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and a zero knowledge proof of $x_4 s$
- \item[]
- \end{itemize}
+\begin{figure}[h]
+    \begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
+        \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells]{
+            Alice                                           &                   & Bob                                           \\
+            Pick $x_1 \in_R \mathbb{Z}_q$ and $x_2 \in_R \mathbb{Z}_q^*$   &   & Pick $x_3 \in_R \mathbb{Z}_q$ and $x_4 \in_R \mathbb{Z}_q^*$ \\
+            						                        & $g^{x_1},g^{x_2}, ZKP\{x_1\},ZKP\{x_2\}$       &                      \\
+                                                            & $g^{x_3},g^{x_4}, ZKP\{x_3\},ZKP\{x_4\}$       &                   \\
+                                                            &                   &                                               \\
+            Verify $ZKP\{x_3\},ZKP\{x_4\}$ and $g^{x_4}\neq1$         &                   & Verify $ZKP\{x_1\},ZKP\{x_2\}$ and $g^{x_2}\neq1$      \\
+            										        & $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and $ZKP\{x_2 s\}$               & 		\\
+                                                            & $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and $ZKP\{x_4 s\}$ & \\
+            Verify $ZKP\{x_4 s\}$                                      &                   & Verify $ZKP\{x_2 s\}$             \\
+            $K = \left(B / g^{x_2x_4 s} \right)^{x_2}$  &       & $K = \left(A / g^{x_2x_4 s} \right)^{x_4}$  \\
+        };
+
+        % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);        % underline "Alice"
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);        % underline "Bob"
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-3-2.south west)--(m-3-2.south east);     % arrow below sending s_A, E_A
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-4-2.south east)--(m-4-2.south west);     % arrow below sending s_B, E_B
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-7-2.south west)--(m-7-2.south east);     % arrow below sending A
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-8-2.south east)--(m-8-2.south west);   % arrow below sending B
+    \end{tikzpicture}
+    \caption{The J-PAKE protocol.}
+    \label{fig:JPAKE}
+\end{figure}
+
+% \begin{itemize}
+
+% \item[]
+% \item[\textbf{Round 2}] Alice sends $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and a zero knowledge proof of $x_2 s$
+% \item[] Bob sends $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and a zero knowledge proof of $x_4 s$
+% \item[]
+% \end{itemize}
 
  At this point, both are able to determine 
  \[ K = \underbrace{\left(B / g^{x_2x_4 s} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4s} = 

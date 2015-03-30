@@ -177,32 +177,65 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 
 }
 
-\frame{  
-  \frametitle{J-PAKE}
+ \frame{  
+   \frametitle{J-PAKE}
 
-   \begin{itemize}
- \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
- \item[] Alice picks $x_1 \in_R [0,q-1]$ and $x_2 \in_R [1,q-1]$
- \item[] Bob picks $x_3 \in_R [0,q-1]$ and $x_4 \in_R [1,q-1]$
- \item[]\pause
- \item[\textbf{Rd 1}] Alice sends $g^{x_1},g^{x_2}$ and ZKPs of $x_1$ and $x_2$ to Bob
- \item[] Bob sends $g^{x_3},g^{x_4}$ and ZKPs of $x_3$ and $x_4$ to Alice
- \item[] [Alice and Bob verify ZKPs and $g^{x_2},g^{x_4} \neq 1$]
- \item[]\pause
- \item[\textbf{Rd 2}] Alice sends $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and ZKP of $x_2 s$
- \item[] Bob sends $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and ZKP of $x_4 s$
- \item[] \pause
- \end{itemize}
-  
-  They share
-  \[ K = \underbrace{\left(B / g^{x_2x_4 s} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4s} = 
- \underbrace{\left(A / g^{x_2x_4 s} \right)^{x_4}}_\text{Computable by Bob}. \]
+   \begin{figure}[h]
+    \begin{tikzpicture}[scale=0.45, every node/.style={scale=0.45}]
+        \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells, ampersand replacement=\&]{
+            Alice                                           \&                   \& Bob                                           \\
+            Pick $x_1 \in_R \mathbb{Z}_q$ and $x_2 \in_R \mathbb{Z}_q^*$   \&   \& Pick $x_3 \in_R \mathbb{Z}_q$ and $x_4 \in_R \mathbb{Z}_q^*$ \\
+                                                \& $g^{x_1},g^{x_2}, ZKP\{x_1\},ZKP\{x_2\}$       \&                      \\ 
+                                                            \& $g^{x_3},g^{x_4}, ZKP\{x_3\},ZKP\{x_4\}$       \&                   \\
+                                                            \&                   \&                                               \\
+            Verify $ZKP\{x_3\},ZKP\{x_4\}$ and $g^{x_4}\neq1$        \&                   \& Verify $ZKP\{x_1\},ZKP\{x_2\}$ and $g^{x_2}\neq1$      \\
+                                        \& $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and $ZKP\{x_2 s\}$               \&    \\
+                                                            \& $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and $ZKP\{x_4 s\}$ \& \\
+            Verify $ZKP\{x_4 s\}$                                      \&                   \& Verify $ZKP\{x_2 s\}$             \\
+            $K = \left(B / g^{x_2x_4 s} \right)^{x_2}$  \&       \& $K = \left(A / g^{x_2x_4 s} \right)^{x_4}$  \\
+        };
+
+        % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);        % underline "Alice"
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);        % underline "Bob"
+        \draw[shorten <=-0.5cm,shorten >=-0.5cm,-latex] (m-3-2.south west)--(m-3-2.south east);     % arrow below sending s_A, E_A
+        \draw[shorten <=-0.5cm,shorten >=-0.5cm,-latex] (m-4-2.south east)--(m-4-2.south west);     % arrow below sending s_B, E_B
+        \draw[shorten <=-0.2cm,shorten >=-0.2cm,-latex] (m-7-2.south west)--(m-7-2.south east);     % arrow below sending A
+        \draw[shorten <=-0.2cm,shorten >=-0.2cm,-latex] (m-8-2.south east)--(m-8-2.south west);   % arrow below sending B
+    \end{tikzpicture}
+    \vspace{0.3in}
+
+    Original uses Schnorr ZKPs
+\end{figure}
+
 }
+
+% \frame{  
+%   \frametitle{J-PAKE}
+
+%    \begin{itemize}
+%  \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
+%  \item[] Alice picks $x_1 \in_R [0,q-1]$ and $x_2 \in_R [1,q-1]$
+%  \item[] Bob picks $x_3 \in_R [0,q-1]$ and $x_4 \in_R [1,q-1]$
+%  \item[]\pause
+%  \item[\textbf{Rd 1}] Alice sends $g^{x_1},g^{x_2}$ and ZKPs of $x_1$ and $x_2$ to Bob
+%  \item[] Bob sends $g^{x_3},g^{x_4}$ and ZKPs of $x_3$ and $x_4$ to Alice
+%  \item[] [Alice and Bob verify ZKPs and $g^{x_2},g^{x_4} \neq 1$]
+%  \item[]\pause
+%  \item[\textbf{Rd 2}] Alice sends $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and ZKP of $x_2 s$
+%  \item[] Bob sends $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and ZKP of $x_4 s$
+%  \item[] \pause
+%  \end{itemize}
+  
+%   They share
+%   \[ K = \underbrace{\left(B / g^{x_2x_4 s} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4s} = 
+%  \underbrace{\left(A / g^{x_2x_4 s} \right)^{x_4}}_\text{Computable by Bob}. \]
+% }
 
 \frame{  
   \frametitle{J-PAKE}
    Satisfies all 4 desired properties \\
-   (under DDH and CDH assumptions)
+   (under DSDH assumptions)
    \vspace{0.4in}
 
    Only two rounds of communication
@@ -239,6 +272,8 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
   \begin{itemize}
     \item[\textbf{Setup}] Let $Q$ be a cyclic subgroup of $\mathbb{Z}_p^*$ with prime order $q$. Both members map the password to an element $\pi \in Q$.
   \end{itemize}
+  \vspace{0.2in}
+  
   \uncover<2>{
     \scalebox{0.6}{
     \begin{tikzpicture}
@@ -293,8 +328,6 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 
 }
 
-
-
 \frame{  
   \frametitle{PAK/PPK -- PPK}
 
@@ -331,6 +364,17 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 
 }
 
+\frame{  
+  \frametitle{Comparisons}
+  
+  \includegraphics[width=\linewidth]{Comparisons.pdf}
+  \vspace{0.2in}
+
+  {\tiny Security of the J-PAKE Password-Authenticated Key Exchange Protocol. \\
+  M. Abdalla, F. Benhamouda and P. MacKenzie, SP'2015.}
+  
+
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % GPAKEs
@@ -392,6 +436,8 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
   \frametitle{Specifications}
   \begin{itemize}
     \item All protocol benchmarks were implemented in Java 1.6 and run on a server (3GHz AMD processor, 6GB of RAM) running Ubuntu 12.04.
+    \item[]
+    \item[]
     \item Benchmarks measured latency, the amount of work each device would have to do in the group excluding communication.
   \end{itemize}
 }
@@ -399,15 +445,22 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 \frame{  
   \frametitle{Results}
 
-\begin{centering}
-  \includegraphics[scale=0.28]{speke.png}
-  \includegraphics[scale=0.28]{scale_jpake.png}
-  \end{centering}
+  \begin{figure}\center \includegraphics[scale = 0.33]{speke.png} \end{figure}
 
-  \includegraphics[scale=0.28]{scale_dragon.png}
-  \includegraphics[scale=0.28]{scale_ppk.png}
+  \begin{figure}\center \includegraphics[scale = 0.33]{scale_jpake.png} \end{figure}
   
 }
+
+\frame{  
+  \frametitle{Results}
+
+  \begin{figure}\center \includegraphics[scale=0.33]{scale_dragon.png}\end{figure}
+
+  \begin{figure}\center \includegraphics[scale=0.33]{scale_ppk.png}\end{figure}
+  
+}
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -425,9 +478,9 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
   \item[]
   \item[] SPEKE+ is very slow
   \item[]
-  \item[] J-PAKE+ is a bit slow, but proven secure (under CDH)
+  \item[] J-PAKE+ is a bit slow, but proven secure (under DSDH)
   \item[]
-  \item[] PPK is faster but weaker security proof
+  \item[] PPK is faster 
   \item[]
   \item[] Dragonfly is fastest, but no security proof 
   \item[] (despite IEEE 802.11-2012 standard)
