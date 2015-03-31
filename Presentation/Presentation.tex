@@ -120,7 +120,7 @@ by Hao, Yi, Chen, and Shahandashti }
   PAKEs allow two parties sharing a \emph{short/weak} password to establish a shared key
   \vspace{0.3in}
 
-  Work in small subgroups $\rightarrow$ more efficient than D-H, etc.
+  No need for public key infrastructure (TA/CA for public keys)
   \vspace{0.3in}
 
   Cannot broadcast password directly -- would need to be protected (expensive)
@@ -321,9 +321,10 @@ Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1
   \item Everyone additionally choose another random $y_i \in_R \mathbb{Z}_q$ and broadcast $g^{y_i}$ w/ ZKP
   \item Everyone can calculate $g^{z_i} := g^{y_{i+1} - y_{i-1}} = g^{y_{i+1}}/g^{y_{i-1}}$
   \end{itemize}
+  \vspace{0.2in}
   
   \pause
-  Group key:
+  Group key (Burmester-Desmedt group key agreement protocol):
   \begin{align}
   \label{groupkey}
   K_i &= (g^{y_{i-1}})^{ny_i} \cdot (y^{z_iy_i})^{n-1} \cdot (y^{z_{i+1}y_{i+1}})^{n-2} \cdots (g^{z_{i-2}y_{i-2}})\\
