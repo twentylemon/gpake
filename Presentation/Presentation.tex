@@ -131,15 +131,15 @@ by Hao, Yi, Chen, and Shahandashti }
 
 \frame{  
   \frametitle{First Protocol: EKE (Bellovin and Merrit 1992)}
-  Pick prim. root $\alpha \in \mathbb{Z}_p$ for $n$-bit prime $p$
+  Pick primitive root $\alpha \in \mathbb{Z}_p$ for $n$-bit prime $p$
   \vspace{0.4in}
 
   \scalebox{0.7}{
     \begin{tikzpicture}
         \matrix (m)[matrix of nodes, column sep=2cm, row sep=8mm, nodes={draw=none, anchor=center, text depth=0pt},ampersand replacement=\&]{
             Alice                                       \&                   \& Bob                                       \\
-            randomly choose $x_a \in \mathbb{Z}_p^*$    \& $[\alpha^{x_a}]_\pi$\&                                           \\
-                                                        \& $[\alpha^{x_b}]_\pi$\& randomly choose $x_b \in \mathbb{Z}_p^*$  \\
+            randomly choose $x_a \in \mathbb{Z}_p^*$    \& $[\alpha^{x_a}]_s$\&                                           \\
+                                                        \& $[\alpha^{x_b}]_s$\& randomly choose $x_b \in \mathbb{Z}_p^*$  \\
         };
 
         % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
@@ -158,7 +158,7 @@ Uses password directly $\implies$ many insecurities found
 \vspace{0.2in}
 
 \pause
-Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1]$
+Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 }
 
 \frame{  
@@ -186,8 +186,8 @@ Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1
 
    \begin{itemize}
  \item[\textbf{Setup}] Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
- \item[] Alice picks $x_1 \in_R [0,q-1]$ and $x_2 \in_R [1,q-1]$
- \item[] Bob picks \hspace{0.015in} $x_3 \in_R [0,q-1]$ and $x_4 \in_R [1,q-1]$
+ \item[] Alice picks $x_1 \in_R \mathbb{Z}_q$ and $x_2 \in_R \mathbb{Z}_q^*$
+ \item[] Bob picks \hspace{0.015in} $x_3 \in_R \mathbb{Z}_q$ and $x_4 \in_R \mathbb{Z}_q^*$
  \item[]\pause
  \item[\textbf{Rd 1}] Alice sends $g^{x_1},g^{x_2}$ and ZKPs of $x_1$ and $x_2$ to Bob
  \item[] Bob sends $g^{x_3},g^{x_4}$ and ZKPs of $x_3$ and $x_4$ to Alice
@@ -200,7 +200,7 @@ Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1
   
   They share
   \[ K = \underbrace{\left(B / g^{x_2x_4 s} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4s} = 
- \underbrace{\left(A / g^{x_2x_4 s} \right)^{x_4}}_\text{Computable by Bob}. \]
+ \underbrace{\left(A / g^{x_2x_4 s} \right)^{x_4}}_\text{Computable by Bob} \]
 }
 
  \frame{  
@@ -243,7 +243,7 @@ Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1
    Only two rounds of communication
    \vspace{0.4in}
 
-   No \emph{explicit} key confirmation (only implicit)
+   No key \emph{confirmation} (only authentication)
    \vspace{0.4in}
 
    Not patented (ISO/IEC 11770-4 standard)
@@ -263,8 +263,8 @@ Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1
    Only two/three rounds of communication
    \vspace{0.3in}
 
-   PAK has explicit key confirmation\\
-   PPK has implicit key confirmation
+   PAK has key confirmation\\
+   PPK has key authentication
 }
 
 \begin{frame}{Dragonfly (Harkins 2012)}
@@ -341,7 +341,7 @@ Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1
         \item[] and broadcasts
         \[ \alert{g^{a_{ij}} \qquad g^{b_{ij}}} \qquad g^{y_i} \qquad \alert{\text{ZKP}(a_{ij}) \quad \text{ZKP}(b_{ij})} \quad \text{ZKP}(y_{i}). \]
         \item[] After, $P_i$ checks ZKPs and
-        \[ g^{z_i} = g^{y_{i+1}}/ g^{y_{i-1}} \neq 1, \qquad g^{b_{ji}} \neq 1\] \pause
+        \[ g^{z_i} = g^{y_{i+1}}/ g^{y_{i-1}} \neq 1, \qquad \alert{g^{b_{ji}} \neq 1}\] \pause
         \item[\textbf{Rd 2}]  $P_i$ computes and broadcasts, for $j \neq i$
         \[ \alert{\beta_{ij} := \left(g^{a_{ij} + a_{ji} + b_{ji}}\right)^{b_{ij}\cdot s}  \qquad \qquad \text{ZKP}(b_{ij}\cdot s)} \]
     \end{itemize}
@@ -354,11 +354,11 @@ Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1
         \item[] Let \alert{$K_{ij} := (\beta_{ji}/g^{b_{ij} \cdot b_{ji} \cdot s})^{b_{ij}} = $ pairwise JPAKE key} \pause
         \item[]
         \item Members compute
-          \[ \kappa_{ij}^{MAC} = H(K_{ij} || `MAC') \qquad \kappa_{ij}^{KC} = H(K_{ij} || `KC') \pause \] 
+          \[ \kappa_{ij}^{MAC} = H(K_{ij} || \text{`MAC'}) \qquad \kappa_{ij}^{KC} = H(K_{ij} || \text{`KC'}) \pause \] 
         \item Members broadcast (and then verify)
         \begin{align*}
         t_{ij}^{MAC} &= HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\})\\
-        t_{ij}^{KC} &= HMAC(\kappa_{ij}^{KC}, `KC' || i || j || g^{a_{ij}} || g^{b_{ij}} || g^{a_{ji}} || g^{b_{ji}})
+        t_{ij}^{KC} &= HMAC(\kappa_{ij}^{KC}, \text{`KC'} || i || j || g^{a_{ij}} || g^{b_{ij}} || g^{a_{ji}} || g^{b_{ji}})
         \end{align*}
     \end{itemize}
     
