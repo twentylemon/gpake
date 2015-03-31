@@ -123,20 +123,20 @@ by Hao, Yi, Chen, and Shahandashti }
   Cannot broadcast password directly -- would need to be protected (expensive)
   \vspace{0.5in}
 
-  Instead, modern PAKEs use \emph{zero-knowledge proof}, \emph{exponentiation}, or \emph{hash} of expression w/ password
+  Instead, modern PAKEs use \emph{zero-knowledge proofs} or \emph{exponentiation / hash} of expression with password
 }
 
 \frame{  
   \frametitle{First Protocol: EKE (Bellovin and Merrit 1992)}
-  Pick prim. root $\alpha \in \mathbb{Z}_p$
+  Pick prim. root $\alpha \in \mathbb{Z}_p$ for $n$-bit prime $p$
   \vspace{0.4in}
 
   \scalebox{0.7}{
     \begin{tikzpicture}
         \matrix (m)[matrix of nodes, column sep=2cm, row sep=8mm, nodes={draw=none, anchor=center, text depth=0pt},ampersand replacement=\&]{
             Alice                                       \&                   \& Bob                                       \\
-            randomly choose $x_a \in \mathbb{Z}_p^*$    \& $[\alpha^{x_a}]_s$\&                                           \\
-                                                        \& $[\alpha^{x_b}]_s$\& randomly choose $x_b \in \mathbb{Z}_p^*$  \\
+            randomly choose $x_a \in \mathbb{Z}_p^*$    \& $[\alpha^{x_a}]_\pi$\&                                           \\
+                                                        \& $[\alpha^{x_b}]_\pi$\& randomly choose $x_b \in \mathbb{Z}_p^*$  \\
         };
 
         % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
@@ -155,11 +155,11 @@ Uses password directly $\implies$ many insecurities found
 \vspace{0.2in}
 
 \pause
-Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
+Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1]$
 }
 
 \frame{  
-  \frametitle{Desired Security Properties}
+  \frametitle{(Some) Desired Security Properties}
   \begin{itemize}
   \item[] \textbf{Offline dictionary attack resistance}
   \item[] Don't leak info which can be used in brute force search
@@ -248,13 +248,13 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 
 \frame{  
   \frametitle{PAK/PPK (Boyko, MacKenzie, and Patel 2000)}
-  Alternative PAKE, via hashing password with random elements and powering \\
+  Alternative PAKEs, via hashing password with random elements and powering \\
    \vspace{0.3in}
   
-  Proposes `simulation model' to prove security (under DDH \& random oracle)
+  Proposes `simulation model' to prove security \\ (under DDH \& random oracle)
   \vspace{0.3in}
   
-   Satisfies all 4 desired properties \\
+   Satisfies all desired properties (and more) \\
    \vspace{0.3in}
 
    Only two/three rounds of communication
@@ -265,7 +265,7 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 }
 
 \begin{frame}{Dragonfly (Harkins 2012)}
-   Alternative PAKE, using discrete log / CDH assumption \\
+   Another PAKE, using discrete log / CDH problem as basis \\
    (IEEE Std 802.11-2012)
    \vspace{0.3in}
 
@@ -283,8 +283,8 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 \frame{  
   \frametitle{Comparisons}
   
-  \includegraphics[width=\linewidth]{Comparisons.pdf}
-  \vspace{0.2in}
+  \includegraphics[width=\linewidth]{Comparisons2.pdf}
+  \vspace{0.4in}
 
   {\tiny Security of the J-PAKE Password-Authenticated Key Exchange Protocol. \\
   M. Abdalla, F. Benhamouda and P. MacKenzie, SP'2015.}
@@ -302,11 +302,11 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 
 \frame{  
   \frametitle{The Fairy-Ring Dance}
-  Group members establish the group key and the pair-wise keys simultaneously.
+  Group members establish pairwise keys (for trust / authentication) and a group key simultaneously.
   \vspace{0.2in}
   
   \pause
-  \textbf{For pair-wise key:}\\
+  \textbf{For pairwise key:}\\
   Use plain two-party PAKE protocols
   
   \vspace{0.2in}
@@ -332,13 +332,13 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
         \item[\textbf{Setup}]  Let $G = <\hspace{-.05in} g \hspace{-.05in} >$ be an order $q$ subgroup of $\mathbb{Z}_p^*$
         \item[] \pause
         \item[\textbf{Rd 1}] $P_i$ chooses, for all $j \neq i$
-        \[ a_{ij} \in_R \mathbb{Z}_q \qquad\qquad b_{ij} \in_R \mathbb{Z}_q^* \qquad\qquad y_i \in_R \mathbb{Z}_q, \]
+        \[ \alert{a_{ij} \in_R \mathbb{Z}_q \qquad\qquad b_{ij} \in_R \mathbb{Z}_q^*} \qquad\qquad y_i \in_R \mathbb{Z}_q, \]
         \item[] and broadcasts
-        \[ g^{a_{ij}} \qquad g^{b_{ij}} \qquad g^{y_i} \qquad \text{ZKP}(a_{ij}) \quad \text{ZKP}(b_{ij}) \quad \text{ZKP}(y_{i}). \]
+        \[ \alert{g^{a_{ij}} \qquad g^{b_{ij}}} \qquad g^{y_i} \qquad \alert{\text{ZKP}(a_{ij}) \quad \text{ZKP}(b_{ij})} \quad \text{ZKP}(y_{i}). \]
         \item[] After, $P_i$ checks ZKPs and
         \[ g^{z_i} = g^{y_{i+1}}/ g^{y_{i-1}} \neq 1, \qquad g^{b_{ji}} \neq 1\] \pause
         \item[\textbf{Rd 2}]  $P_i$ computes and broadcasts, for $j \neq i$
-        \[ \beta_{ij} := \left(g^{a_{ij} + a_{ji} + b_{ji}}\right)^{b_{ij}\cdot s}  \qquad \qquad \text{ZKP}(b_{ij}\cdot s)\]
+        \[ \alert{\beta_{ij} := \left(g^{a_{ij} + a_{ji} + b_{ji}}\right)^{b_{ij}\cdot s}  \qquad \qquad \text{ZKP}(b_{ij}\cdot s)} \]
     \end{itemize}
 \end{frame}
 
@@ -346,11 +346,11 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
     \begin{itemize}
         \item[\textbf{Rd 3}] Every $P_i$ broadcasts
           \[ (g^{z_i})^{y_i} \text{ and } \text{ZKP}\{\tilde{y_i}\}. \]
-        \item[] Let $K_{ij} := (\beta_{ji}/g^{b_{ij} \cdot b_{ji} \cdot s})^{b_{ij}} = $ pairwise JPAKE key \pause
+        \item[] Let \alert{$K_{ij} := (\beta_{ji}/g^{b_{ij} \cdot b_{ji} \cdot s})^{b_{ij}} = $ pairwise JPAKE key} \pause
         \item[]
         \item Members compute
           \[ \kappa_{ij}^{MAC} = H(K_{ij} || `MAC') \qquad \kappa_{ij}^{KC} = H(K_{ij} || `KC') \pause \] 
-        \item Members broadcast 
+        \item Members broadcast (and then verify)
         \begin{align*}
         t_{ij}^{MAC} &= HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\})\\
         t_{ij}^{KC} &= HMAC(\kappa_{ij}^{KC}, `KC' || i || j || g^{a_{ij}} || g^{b_{ij}} || g^{a_{ji}} || g^{b_{ji}})
@@ -359,9 +359,6 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
     
     All members share $K = g^{y_1 \cdot y_2 + y_2 \cdot y_3 + \cdots + y_n \cdot y_1}$
 \end{frame}
-
-
-
 
 
 
