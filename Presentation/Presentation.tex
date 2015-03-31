@@ -118,10 +118,13 @@ by Hao, Yi, Chen, and Shahandashti }
 \frame{  
   \frametitle{Password Authenticated Key Exchange (PAKE)}
   PAKEs allow two parties sharing a \emph{short/weak} password to establish a shared key
-  \vspace{0.5in}
+  \vspace{0.3in}
+
+  Work in small subgroups $\rightarrow$ more efficient than D-H, etc.
+  \vspace{0.3in}
 
   Cannot broadcast password directly -- would need to be protected (expensive)
-  \vspace{0.5in}
+  \vspace{0.3in}
 
   Instead, modern PAKEs use \emph{zero-knowledge proofs} or \emph{exponentiation / hash} of expression with password
 }
@@ -283,13 +286,14 @@ Ex: Decypher $[\alpha^{x_a}]_{\pi'}$ -- rule out $\pi'$ if output in $[p,2^{n}-1
 \frame{  
   \frametitle{Comparisons}
   
-  \includegraphics[width=\linewidth]{Comparisons2.pdf}
+  \includegraphics[width=\linewidth]{Comparisons3.pdf}
   \vspace{0.4in}
 
   {\tiny Security of the J-PAKE Password-Authenticated Key Exchange Protocol. \\
   M. Abdalla, F. Benhamouda and P. MacKenzie, SP'2015.}
-  
+  \vspace{0.2in}
 
+  {\tiny BPR = model of Bellare, Pointcheval, and Rogaway from EUROCRYPT 2000}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
