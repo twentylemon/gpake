@@ -236,7 +236,7 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
 
 \frame{  
   \frametitle{J-PAKE (Hao and Ryan 2010)}
-   Satisfies all 4 desired properties (under DSDH assumption) \\
+   Satisfies all 4 desired properties (under some assumptions) \\
    More robust security proof in 2015
    \vspace{0.4in}
 
@@ -254,7 +254,7 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
   Alternative PAKEs, via hashing password with random elements and powering \\
    \vspace{0.3in}
   
-  Proposes `simulation model' to prove security \\ (under DDH \& random oracle)
+  Proposes formal model to prove security \\ (under DDH \& random oracle)
   \vspace{0.3in}
   
    Satisfies all desired properties (and more) \\
@@ -419,22 +419,34 @@ Ex: Decypher $[\alpha^{x_a}]_{s'}$ -- rule out $s'$ if output in $[p,2^{n}-1]$
   \begin{itemize}
   \item[] It is possible to transfer PAKEs into GPAKEs while preserving round efficiency
   \item[]
-  \item[] SPEKE+ is very slow
+  \item[] J-PAKE+ is a bit slow, but proven secure
   \item[]
-  \item[] J-PAKE+ is a bit slow, but `proven' secure (under DSDH)
+  \item[] PPK+ is faster, also proven secure
   \item[]
-  \item[] PPK is faster 
-  \item[]
-  \item[] Dragonfly is fastest, but no security proof 
+  \item[] Dragonfly is fastest, but no security proof
   \item[] (despite IEEE 802.11-2012 standard)
+  \item[]
+  \item[] Group security properties proven, but no formal model
   \end{itemize}
 }
 
-
+\frame{
+  \frametitle{References}
+\scriptsize
+  \nocite{*}
+\bibliographystyle{plain}
+\bibliography{Project}
+}
 
 \frame{
-  \frametitle{\vspace{1.1in} \begin{center} THANK YOU \end{center}}
+  \frametitle{\vspace{1.1in} \begin{center} THANK YOU 
+  \vspace{0.3in}
+
+  (code to come on GitHub) \end{center}}
 }
+
+
+
 
 
 %\frame{  
