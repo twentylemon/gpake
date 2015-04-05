@@ -186,8 +186,8 @@ $\left[\alpha^{x_a}\right]_{\pi}$ and immediately rule out any passwords giving 
 Although EKE has this, and other, weaknesses, it was extremely influential and its general characteristics are 
 reflected in many of the more advanced protocols we outline below (there is also a minor variant known as EKE2,
 which was shown to be secure by Bellare, Pointcheval, and Rogaway~\cite{BePoRo00}).  Before giving these methods, we must outline 
-what constitutes a good measure of security for a PAKE. To begin, a secure two party PAKE satisfies each of the following four properties
-(which correspond to desired properties of general key exchange protocols):
+what constitutes a good measure of security for a PAKE. To begin, a secure two party PAKE satisfies each of the following properties
+coming from the security of general key exchange protocols:
 \\
 
 \begin{itemize}
@@ -212,12 +212,15 @@ what constitutes a good measure of security for a PAKE. To begin, a secure two p
  best that we can reasonably assume, as any attacker can randomly guess a password and 
  run the protocol -- at some point the key must be confirmed, either explicitly through the 
  PAKE or when the key is used in some other protocol, and the attacker will know whether or
- not his guess was correct).
+ not his guess was correct).  This is sometimes relaxed (for instance, in the proof of SPEKE given
+ by MacKenzie~\cite{Mac01}) to restricting the attacker to at most a small constant number of tests
+ per protocol execution.
 \item[]
 \end{itemize}
 
- These properties are illustrated in sub-Section~\ref{sec:JPAKE} when we outline their proof
- for the J-PAKE protocol. In the modern literature, a full proof of security essentially requires showing that an attacker
+ %These properties are illustrated in sub-Section~\ref{sec:JPAKE} when we outline their proof
+ %for the J-PAKE protocol. 
+ In the modern literature, a full proof of security essentially requires showing that an attacker
  can only gain information about established keys or a shared password if he is active, and that even an active
  attacker can gain extremely little information (for instance, can only guess one password per protocol execution).
  The formal model of Bellare, Pointcheval, and Rogaway~\cite{BePoRo00} is commonly used as a standard, and three of the 

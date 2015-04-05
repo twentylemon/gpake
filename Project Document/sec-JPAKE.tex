@@ -1,12 +1,20 @@
-We start this protocol by describing the Password Authenticated Key Exchange by Juggling (J-PAKE) method
-of Hao and Ryan~\cite{HaRy2010}.  Let $G$ be a subgroup of $\mathbb{Z}_p^* = \mathbb{Z}_p \setminus \{0\}$ 
-with prime order $q$, where the Decision Diffie-Hellman (DDH) problem is considered intractable.  Let $g\in G$
-be a generator of the subgroup and $s \in [1,q-1]$ be the shared password between Alice and Bob, where 
-$[a,b]$ is notation meaning the elements of $\mathbb{Z}^*$ between $a$ and $b$:  $[a,b] := \{a,a+1,\dots,b \}$.
-\\
+In 2010, Hao and Ryan~\cite{HaRy2010} proposed the Password Authenticated Key Exchange by Juggling (J-PAKE) protocol,
+at least in part to get around the deficiencies of the SPEKE method described in the previous section.\footnote{In addition
+to the security flaws, such as allowing multiple guesses of the password per execution, SPEKE is also patented by Phoenix
+Technologies, while J-PAKE proudly presents its freedom from patents.}  J-PAKE, which is used in Firefox and (as an optional protocol)
+in OpenSSL, among others, is quite straightforward and uses the shared password to make a nice simplification of randomly chosen 
+Diffie-Hellman like exponentiations.
 
-The protocol consists of a setup round followed by two rounds of communication (for details on zero knowledge
-proofs see sub-Section~\ref{sec:ZKP} -- in our implementation detailed later the XXX ZKP is used \comment{Which? Schnorr?}):
+The protocol as specified relies on a Zero Knowledge Proof (ZKP) of an exponent: that is, a protocol such that a sender can 
+transmit $X = g^x$ and a message which allows a receiver to determine almost certainly that the sender knows $x$, without 
+revealing any knowledge of $x$ (the element $X$ is assumed to be a member of a group in which the computational Diffie-Hellman
+problem is hard).  Our implementation uses the common Schnorr non-interactive ZKP: roughly, the sender transmits their ID, $sID$, along with the values 
+\[ V = g^v \qquad \text{and} \qquad r = v-xh \]
+where $v \in_R \mathbb{Z}_q$ and $h := H(g || V || X || sID)$ for a suitable hash function $H$.  The receiver checks that $X$ is in the proper group, that $h$ is the correct hash, and that $V = g^r \cdot X^h$. This choice of ZKP is also used by Hao et. al.~\cite{HaYiChSh15}, and we refer the reader to that paper for more details. \\
+
+We are now ready to describe the protocol. Let $G$ be a subgroup of $\mathbb{Z}_p^* = \mathbb{Z}_p \setminus \{0\}$ 
+with prime order $q$, $g$ be a generator of the subgroup, and $\pi \in \mathbb{Z}_q^*$ be the shared password between Alice and Bob.
+J-PAKE consists of a setup round followed by two rounds of communication:
 \begin{figure}[h]
     \begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
         \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells]{
@@ -34,74 +42,77 @@ proofs see sub-Section~\ref{sec:ZKP} -- in our implementation detailed later the
     \label{fig:JPAKE}
 \end{figure}
 
-% \begin{itemize}
-
-% \item[]
-% \item[\textbf{Round 2}] Alice sends $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and a zero knowledge proof of $x_2 s$
-% \item[] Bob sends $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and a zero knowledge proof of $x_4 s$
-% \item[]
-% \end{itemize}
-
- At this point, both are able to determine 
+ As noted in the figure, both Alice and Bob are able to determine 
  \[ K = \underbrace{\left(B / g^{x_2x_4 s} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4s} = 
  \underbrace{\left(A / g^{x_2x_4 s} \right)^{x_4}}_\text{Computable by Bob}. \]
- The shared session key is then taken to be $\kappa = H(K)$, where $H$ is a hash function. 
- \comment{Why do they hash here?}  Note that this scheme has implicit key confirmation: each of Alice and 
- Bob believe only the other can calculate the shared key; an explicit key confirmation can then be 
- performed if desired (which will increase the number of rounds of communication by at least one).
- \\ 
- We now show that the J-PAKE protocol satisfies the four properties required to be considered a secure PAKE,
-in order to illustrate the properties and the methods by which they can be proven:
-without loss of generality we may assume that Alice is honest, and let $x_a := x_1+x_3+x_4$.  
+ The shared session key is then taken to be $\kappa = H(K)$, where $H$ is a suitable hash function. 
+ We note that J-PAKE (like SPEKE) admits only key authentication: each of Alice and 
+ Bob know that the only people who can calculate the shared key are themselves; key confirmation can additionally be 
+ performed if desired (which will increase the number of rounds of communication by one).
+ \\
 
-\begin{lemma} With high probability (approximately $2^{-160}$ for $q$ a 160-bit prime) the element $g_a := g^{x_a}$ is a
-generator for the subgroup $G$, and Alice can verify this.
-\end{lemma}
-\begin{proof}
-Since $|G|=q$ is prime, it is sufficient to prove that $g_a \neq 1$ (any non-identity element generates $G$) with high probability.  
-As Alice verifies that $x_3$ and $x_4$ are known to Bob due to his zero knowledge proofs in round 1, and $x_1$ is 
-chosen randomly by Alice, $x_a$ must be a random value from Bob's perspective.  In other words, $x_a \neq 0$
-with high probability, even if Bob is an active adversary.  Alice can verify that $g_a$ is a generator for $g$ as she knows the 
-value of $x_a$.
-\end{proof}
+ In their original paper, Hao and Ryan~\cite{HaRy2010} gave proofs that J-PAKE satisfies the four security properties 
+ (offline dictionary attack resistance, forward secrecy for established keys, known session security, and online dictionary attack resistance) 
+discussed at the beginning at this section.  Although these proofs were straightforward, they did not take place in the framework of an established
+and commonly used formal model for PAKE security, and relied on unstated assumptions about an adversary's range of potentially attack 
+techniques.  As Feng Hao, one of the J-PAKE authors, wrote in a blog post\footnote{Accessible at 
+\url{https://www.lightbluetouchpaper.org/2008/05/29/j-pake/\#comment-9550}}:
+``Some researchers might like to take it from here and add more `formalism' into the paper.  I'm sure that will be a valuable addition in future work.''
+In 2015, the security of J-PAKE was proven in the model of Bellare, Pointcheval, and Rogaway by Abdalla et. al.~\cite{AbdBenMac15} under the
+assumptions of the random-oracle model, the algebraic adversary model (AAM)\footnote{The AAM, originated by Dolev and Yao~\cite{DoYa83} states that an adversary can only perform operations in the underlying group of the protocol, on known messages (for instance, the attacker cannot modify the bits of messages or guess keys)} and the hardness of the Decision Square Diffie-Hellman problem (DSDH). DSHD is XXX.  
 
-An analogous proof shows that when Bob is honest the element $g_b := g^{x_1+x_2+x_3}$ is a generator of $G$ with high probability.  We first show resistance to an offline attack with an active adversary.
+%  We now show that the J-PAKE protocol satisfies the four properties required to be considered a secure PAKE,
+% in order to illustrate the properties and the methods by which they can be proven:
+% without loss of generality we may assume that Alice is honest, and let $x_a := x_1+x_3+x_4$.  
 
-\begin{theorem}[Offline resistance to active attack] Under the DDH assumption, when $g_a$ is a generator of $G$ any attacker Oscar cannot distinguish
-Alice's ciphertext from a random non-identity element in the subgroup $G$.
-\end{theorem}
-\begin{proof}
-Suppose that Alice communicates with Oscar, who does not know the password.  After the protocol is run, Oscar knows
-\[ g^{x_1}, g^{x_2}, A = g_a^{x_2 s}, \text{ and ZKPs of the exponents } x_1 \text{ and } x_2. \]
-By definition, with high probability the zero knowledge proofs reveal only one bit of information: that Alice knows the values of the
-exponents.  As argued in the proof of the last lemma, with high probability $g_a$ is a (random) generator of the group $G$.  Furthermore, 
-as $x_2$ is chosen randomly it follows that $x_2s \in [1,q-1]$ is random and thus unknown to Oscar.  Thus, the only way to distinguish $A$ from a random 
-non-identity element would be for Oscar to solve an instance of the Decision Diffie-Hellman problem.
-\end{proof}
+% \begin{lemma} With high probability (approximately $2^{-160}$ for $q$ a 160-bit prime) the element $g_a := g^{x_a}$ is a
+% generator for the subgroup $G$, and Alice can verify this.
+% \end{lemma}
+% \begin{proof}
+% Since $|G|=q$ is prime, it is sufficient to prove that $g_a \neq 1$ (any non-identity element generates $G$) with high probability.  
+% As Alice verifies that $x_3$ and $x_4$ are known to Bob due to his zero knowledge proofs in round 1, and $x_1$ is 
+% chosen randomly by Alice, $x_a$ must be a random value from Bob's perspective.  In other words, $x_a \neq 0$
+% with high probability, even if Bob is an active adversary.  Alice can verify that $g_a$ is a generator for $g$ as she knows the 
+% value of $x_a$.
+% \end{proof}
 
-The result in the case of a passive attacker follows in a straightforward manner (note that this case must be proven separately as above the active attacker does not know the password $s$, but when he passively observes a session Alice is communicating with Bob, who does know $s$).
+% An analogous proof shows that when Bob is honest the element $g_b := g^{x_1+x_2+x_3}$ is a generator of $G$ with high probability.  We first show resistance to an offline attack with an active adversary.
 
-\begin{theorem}[Offline resistance to passive attack] Under the DDH assumption, given that $g_a$ and $g_b$ are generators of $G$, the ciphertexts 
- \[ A = g_a^{x_2s} \text{ and } B = g_b^{x_4s} \]
-do not leak information for password verification.
-\end{theorem}
-\begin{proof}
-Our above work shows that the value $A$ looks random to Bob, and analogously that $B$ looks random to Alice.  Thus, both must look random
-to a passive adversary, who has less information about the protocol's secrets than either Alice or Bob.
-\end{proof}
+% \begin{theorem}[Offline resistance to active attack] Under the DDH assumption, when $g_a$ is a generator of $G$ any attacker Oscar cannot distinguish
+% Alice's ciphertext from a random non-identity element in the subgroup $G$.
+% \end{theorem}
+% \begin{proof}
+% Suppose that Alice communicates with Oscar, who does not know the password.  After the protocol is run, Oscar knows
+% \[ g^{x_1}, g^{x_2}, A = g_a^{x_2 s}, \text{ and ZKPs of the exponents } x_1 \text{ and } x_2. \]
+% By definition, with high probability the zero knowledge proofs reveal only one bit of information: that Alice knows the values of the
+% exponents.  As argued in the proof of the last lemma, with high probability $g_a$ is a (random) generator of the group $G$.  Furthermore, 
+% as $x_2$ is chosen randomly it follows that $x_2s \in [1,q-1]$ is random and thus unknown to Oscar.  Thus, the only way to distinguish $A$ from a random 
+% non-identity element would be for Oscar to solve an instance of the Decision Diffie-Hellman problem.
+% \end{proof}
 
-Next we show forward secrecy under the assumption that the Square Computational Diffie-Hellman problem is hard (this problem, which has been shown to be equivalent to the Computational Diffie-Hellman problem, asks one to compute $g^{a^2}$ given the value $g^a$ with $a$ some unknown value).  Since the zero-knowledge proofs imply that Alice and Bob know the values of $x_1$ and $x_3$, with high probability $x_1+x_3 \neq 0$ in $\mathbb{Z}_q$ -- which implies $K = g^{(x_1+x_3)x_2x_4s} \neq 1$ with high probability, even if one of Alice or Bob is an active adversary.
+% The result in the case of a passive attacker follows in a straightforward manner (note that this case must be proven separately as above the active attacker does not know the password $s$, but when he passively observes a session Alice is communicating with Bob, who does know $s$).
 
-\begin{theorem}[Forward Secrecy]
-Under the Square Computational Diffie-Hellman assumption, when $K \neq 1$, past session keys derived from the protocol remain incomputable even when $s$ is later disclosed.
-\end{theorem}
-\begin{proof}
-Knowing $s$, the attacker wants to compute $\kappa = H(K)$ given
-\[ \{g^{x_1},g^{x_2},g^{x_3},g^{x_4},g^{(x_1+x^3+x_4)x_2}, g^{(x_1+x_2+x_3)x_4}. \} \]
-Suppose the attacker can compute $K$, and thus $g^{(x_1+x_3)x_2x_4}$ from the above information -- we show how he can act as an oracle to solve the
-Square Computational Diffie-Hellman problem.  Let $x_5 = x_1+x_3$ mod $q$ (which is non-zero when $K \neq 1$).  Then ...
-\end{proof}
-\comment{To be continued}
+% \begin{theorem}[Offline resistance to passive attack] Under the DDH assumption, given that $g_a$ and $g_b$ are generators of $G$, the ciphertexts 
+%  \[ A = g_a^{x_2s} \text{ and } B = g_b^{x_4s} \]
+% do not leak information for password verification.
+% \end{theorem}
+% \begin{proof}
+% Our above work shows that the value $A$ looks random to Bob, and analogously that $B$ looks random to Alice.  Thus, both must look random
+% to a passive adversary, who has less information about the protocol's secrets than either Alice or Bob.
+% \end{proof}
+
+% Next we show forward secrecy under the assumption that the Square Computational Diffie-Hellman problem is hard (this problem, which has been shown to be equivalent to the Computational Diffie-Hellman problem, asks one to compute $g^{a^2}$ given the value $g^a$ with $a$ some unknown value).  Since the zero-knowledge proofs imply that Alice and Bob know the values of $x_1$ and $x_3$, with high probability $x_1+x_3 \neq 0$ in $\mathbb{Z}_q$ -- which implies $K = g^{(x_1+x_3)x_2x_4s} \neq 1$ with high probability, even if one of Alice or Bob is an active adversary.
+
+% \begin{theorem}[Forward Secrecy]
+% Under the Square Computational Diffie-Hellman assumption, when $K \neq 1$, past session keys derived from the protocol remain incomputable even when $s$ is later disclosed.
+% \end{theorem}
+% \begin{proof}
+% Knowing $s$, the attacker wants to compute $\kappa = H(K)$ given
+% \[ \{g^{x_1},g^{x_2},g^{x_3},g^{x_4},g^{(x_1+x^3+x_4)x_2}, g^{(x_1+x_2+x_3)x_4}. \} \]
+% Suppose the attacker can compute $K$, and thus $g^{(x_1+x_3)x_2x_4}$ from the above information -- we show how he can act as an oracle to solve the
+% Square Computational Diffie-Hellman problem.  Let $x_5 = x_1+x_3$ mod $q$ (which is non-zero when $K \neq 1$).  Then ...
+% \end{proof}
+% \comment{To be continued}
 
 
 
