@@ -1,1 +1,39 @@
-Info about SPEKE
+A more advanced PAKE which we consider is the Simple Password Exponential Key Exchange (SPEKE) protocol, 
+designed by Jablon~\cite{Ja96} in 1996.  SPEKE tries to work around the deficiencies of EKE by using
+the shared password $\pi$ of the two participants to change the generator of a Diffie-Hellman like 
+scheme.  The protocol runs as follows:
+
+\begin{figure}[h]
+\textbf{Setup:} Let $p = 2q + 1$ where $p$ and $q$ are prime
+    \begin{tikzpicture}
+        \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells]{
+            Alice                                       &                   & Bob                                       \\
+            randomly choose $x_a \in \mathbb{Z}_q^*$    &                   & randomly choose $x_b \in \mathbb{Z}_q^*$  \\
+                                                        & $\left(\pi^2\right)^{x_a}$&                                           \\
+            									        & $\left(\pi^2\right)^{x_b}$ &       									\\
+            Compute $K = \pi^{2\cdot x_a \cdot x_b}$ & & Compute $K = \pi^{2\cdot x_a \cdot x_b}$ \\
+        };
+
+        % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);    % underline "Alice"
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);    % underline "Bob"
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-3-2.south west)--(m-3-2.south east); % arrow below sending alpha^x_a
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-4-2.south east)--(m-4-2.south west); % arrow below sending alpha^x_b
+    \end{tikzpicture}
+    \caption{The flow diagram for SPEKE}
+    \label{fig:SPEKE}
+\end{figure}
+
+Note that the password is squared so that the exponentiations in the protocol can occur in a subgroup of prime order $q$ (the participants must
+check that that $\pi^2 \not\equiv \pm 1$ mod $p$ -- if this is not the case, all work is carried out in the order 2 subgroup of $\mathbb{Z}_p^*$ which renders the protocol insecure, and a new password or prime $p$ must be chosen).  
+
+There are drawbacks to using the password directly: mainly that an attacker can guess multiple passwords in one execution of the 
+protocol (as multiple passwords may have the same square mod $p$) and that the size of the subgroup in which the 
+protocols occur is large (if $p$ is a 1024-bit prime, for example, then $q$ is a 1023-bit prime).  Although it is troubling to allow
+an active attacker multiple guesses at the password, for practical purposes as long as they are limited to a small constant number of 
+guesses per protocol execution the security of the protocol can be safely assumed.  Indeed, a variant of the basic protocol presented in 
+Figure~\ref{fig:SPEKE} where a hash of the password is squared (as defined by the IEEE P1363.2 standard regarding SPEKE\footnote{Our implementation of SPEKE uses this variant}) was later proven secure
+by MacKenzie~\cite{Mac01} in a common formal model (proposed by Boyko, MacKenzie and Patel~\cite{BoMaPa00}) under the assumptions of the
+random-oracle model and the hardness of the decision inverted-additive Diffie-Hellman (DIDH) problem\footnote{This somewhat non-standard Diffie-Hellman assumption asks one to distinguish between an element $g^{(x+y)^{-1}}$ and a random group element, given the elements $X = g^{x^{-1}}$ and $Y = g^{y^{-1}}$.  It has been shown that if the typical computational Diffie-Hellman problem (CDH) is hard, so is the computational inverted-additive Diffie-Hellman problem.  Furthermore, if the Decision Square Diffie-Hellman problem is hard (which is assumed in the security proof of the J-PAKE protocol, discussed below) then the DIDH problem is hard. See Figure 2 of Abdalla et. al.~\cite{AbdBenMac15} for a comparison of all the Diffie-Hellman type assumptions used in the protocols presented here.}.  Here, the notion of `secure' is relaxed to allow an active attacker to rule out a (small) constant number of guesses per protocol execution.
+
+
