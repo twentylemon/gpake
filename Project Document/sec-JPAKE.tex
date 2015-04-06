@@ -12,8 +12,8 @@ problem is hard).  Our implementation uses the common Schnorr non-interactive ZK
 \[ V = g^v \qquad \text{and} \qquad r = v-xh \]
 where $v \in_R \mathbb{Z}_q$ and $h := H(g || V || X || sID)$ for a suitable hash function $H$.  The receiver checks that $X$ is in the proper group, that $h$ is the correct hash, and that $V = g^r \cdot X^h$. This choice of ZKP is also used by Hao et. al.~\cite{HaYiChSh15}, and we refer the reader to that paper for more details. \\
 
-We are now ready to describe the protocol. Let $G$ be a subgroup of $\mathbb{Z}_p^* = \mathbb{Z}_p \setminus \{0\}$ 
-with prime order $q$, $g$ be a generator of the subgroup, and $\pi \in \mathbb{Z}_q^*$ be the shared password between Alice and Bob.
+We are now ready to describe the protocol. Let $Q$ be a subgroup of $\mathbb{Z}_p^* = \mathbb{Z}_p \setminus \{0\}$ 
+with prime order $q$, $g$ be a generator of this subgroup, and $\pi \in \mathbb{Z}_q^*$ be the shared password between Alice and Bob.
 J-PAKE consists of a setup round followed by two rounds of communication:
 \begin{figure}[h]
     \begin{tikzpicture}[scale=0.8, every node/.style={scale=0.8}]
@@ -24,10 +24,10 @@ J-PAKE consists of a setup round followed by two rounds of communication:
                                                             & $g^{x_3},g^{x_4}, ZKP\{x_3\},ZKP\{x_4\}$       &                   \\
                                                             &                   &                                               \\
             Verify $ZKP\{x_3\},ZKP\{x_4\}$ and $g^{x_4}\neq1$         &                   & Verify $ZKP\{x_1\},ZKP\{x_2\}$ and $g^{x_2}\neq1$      \\
-            										        & $A = g^{(x_1+x_3+x_4)x_2\cdot s}$ and $ZKP\{x_2 s\}$               & 		\\
-                                                            & $B = g^{(x_1+x_2+x_3)x_4\cdot s}$ and $ZKP\{x_4 s\}$ & \\
-            Verify $ZKP\{x_4 s\}$                                      &                   & Verify $ZKP\{x_2 s\}$             \\
-            $K = \left(B / g^{x_2x_4 s} \right)^{x_2}$  &       & $K = \left(A / g^{x_2x_4 s} \right)^{x_4}$  \\
+            										        & $A = g^{(x_1+x_3+x_4)x_2\cdot \pi}$ and $ZKP\{x_2 \pi\}$               & 		\\
+                                                            & $B = g^{(x_1+x_2+x_3)x_4\cdot \pi}$ and $ZKP\{x_4 \pi\}$ & \\
+            Verify $ZKP\{x_4 \pi\}$                                      &                   & Verify $ZKP\{x_2 \pi\}$             \\
+            Calculate $K = \left(B / g^{x_2x_4 \pi} \right)^{x_2}$  &       & Calculate $K = \left(A / g^{x_2x_4 \pi} \right)^{x_4}$  \\
         };
 
         % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
@@ -43,8 +43,8 @@ J-PAKE consists of a setup round followed by two rounds of communication:
 \end{figure}
 
  As noted in the figure, both Alice and Bob are able to determine 
- \[ K = \underbrace{\left(B / g^{x_2x_4 s} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4s} = 
- \underbrace{\left(A / g^{x_2x_4 s} \right)^{x_4}}_\text{Computable by Bob}. \]
+ \[ K = \underbrace{\left(B / g^{x_2x_4 \pi} \right)^{x_2}}_\text{Computable by Alice} = g^{(x_1+x_3)x_2x_4\pi} = 
+ \underbrace{\left(A / g^{x_2x_4 \pi} \right)^{x_4}}_\text{Computable by Bob}. \]
  The shared session key is then taken to be $\kappa = H(K)$, where $H$ is a suitable hash function. 
  We note that J-PAKE (like SPEKE) admits only key authentication: each of Alice and 
  Bob know that the only people who can calculate the shared key are themselves; key confirmation can additionally be 
