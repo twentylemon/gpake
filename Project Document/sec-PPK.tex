@@ -11,21 +11,58 @@ Let $\pi$ be the password shared by Alice and Bob and $p$ and $q$ be primes with
 Furthermore, let $g$ be a generator of a subgroup of $\mathbb{Z}^\ast_p$ of size $q$ where the Decision
 Diffie-Hellman (DDH) problem is infeasible. Finally, we take $H_1, H_{2a}, H_{2b}, H_3$ to be independent random hash 
 functions. The PAK and PPK protocols are described as in Figures \ref{fig:pak} and \ref{fig:ppk}. 
-\comment{Re-do diagrams for ourselves}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.4]{pak_protocol.png}
+    \begin{tikzpicture}
+        \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells]{
+            Alice                                           &                   & Bob                                           \\
+            $x\in_R \mathbb{Z}_q$   &   &  \\
+            $m = g^x\cdot \left(H_1(Alice, Bob, \pi)\right)^r$  &   $m$       & Test $m\not\equiv 0 \mod p$   \\
+                       &      & $y \in_R \mathbb{Z}_q$ \quad $\mu = g^y$               \\
+                       &       &    $\sigma = \left(\frac{m}{(H_1(Alice, Bob, \pi))^r}\right)^y$                              \\
+          $\sigma = \mu^x$   &     $\mu, k$      &   $k = H_{2a}(Alice, Bob, m, \mu, \sigma, \pi)$           \\
+            Test $k = H_{2a}(Alice, Bob, m, \mu, \sigma, \pi)$   &                   &       \\
+           $k^\prime = H_{2b}(Alice, Bob, m, \mu, \sigma, \pi)$  &       &   \\
+           $K = H_3(Alice, Bob, m, \mu, \sigma, \pi)$     & $k^\prime$    & Test $k^\prime = H_{2b}(Alice, Bob, m, \mu, \sigma, \pi)$       \\
+                &               &        $K = H_3(Alice, Bob, m, \mu, \sigma, \pi)$                                       \\
+        };
+
+        % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);        % underline "Alice"
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);        % underline "Bob"
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-3-2.south west)--(m-3-2.south east);     % arrow below sending s_A, E_A
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-6-2.south east)--(m-6-2.south west);     % arrow below sending s_B, E_B
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-9-2.south west)--(m-9-2.south east);     % arrow below sending A
+    \end{tikzpicture}
     \caption{The PAK protocol.}
     \label{fig:pak}
 \end{figure}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.33]{ppk_protocol.png}
+    \begin{tikzpicture}
+        \matrix (m)[matrix of nodes, column sep=1cm, column 2/.style={minimum width=1.5cm}, nodes in empty cells]{
+            Alice                                           &                   & Bob                                           \\
+            $x\in_R \mathbb{Z}_q$   &   &  \\
+            $m = g^x\cdot \left(H_1(Alice, Bob, \pi)\right)^r$  &   $m$       & Test $m\not\equiv 0 \mod p$   \\
+                       &      & $y \in_R \mathbb{Z}_q$ \quad $\mu = g^y\cdot{H_1(Alice, Bob, \pi)^r}$       \\
+                       &       &    $\sigma = \left(\frac{m}{(H_1(Alice, Bob, \pi))^r}\right)^y$                              \\
+     Test $\mu \not\equiv 0\mod p$      &   $\mu$   &   $K = H_3(Alice, Bob, m, \mu, \sigma, \pi)$    \\
+     $\sigma = \left(\frac{\mu}{(H_1(Alice, Bob, \pi))^r}\right)^x$ & & \\
+     $K = H_3(Alice, Bob, m, \mu, \sigma, \pi)$ & & \\
+        };
+
+        % draw the nodes - these are 1-based indicies on the matrix called `m`, ie to draw in (x,y), reference it as `m-x-y`
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-1.south east)--(m-1-1.south west);        % underline "Alice"
+        \draw[shorten <=-1.5cm,shorten >=-1.5cm] (m-1-3.south east)--(m-1-3.south west);        % underline "Bob"
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-3-2.south west)--(m-3-2.south east);     % arrow below sending s_A, E_A
+        \draw[shorten <=-1cm,shorten >=-1cm,-latex] (m-6-2.south east)--(m-6-2.south west);     % arrow below sending s_B, E_B
+    \end{tikzpicture}
     \caption{The PPK protocol.}
     \label{fig:ppk}
 \end{figure}
+
 
 In their original paper, Boyko, MacKenzie and Patel~\cite{BoMaPa00} developed a new formal model for PAKE
 security, in which they proved that PAK and PPK are secure under the assumptions of the random-oracle model and
