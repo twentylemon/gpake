@@ -1,34 +1,48 @@
 
 
-\begin{itemize}
-    \item implementation details (how password was mapped, source of primes, etc)
-    \item change of small subgroup attack -- we don't restart the step, instead the other person verifies the value received
-    \item brief overview of d+ -- can mostly reference dragonfly and general construction
-    \item brief mention security
-\end{itemize}
-
 We present the group extension to the Dragonfly protocol using the general construction outlined in \cite{HaYiChSh15}.
 The construction follows the Dragonfly protocol closely, with only minor modifications to the first round of communication
 and of course adding the final round to establish the group key. The setup is the same as Dragonfly (see Section \ref{sec:Dragon}),
 except the generator of the subgroup $Q$ is required, called $g$. The Dragonfly+ protocol executes as follows:
 
-\emph{Setup}: Every participant $P_i$ have a shared password which they map to an element $\pi \in Q$.
-
-\emph{Round 1}: Every participant selects $r_{ij}, m_{ij} \in_R \mathbb{Z}_q^*$ for all $j \in \{1,\ldots,n\} \setminus \{i\}$.
-They each compute $s_{ij} = r_{ij} + m_{ij} \mod q$ and the element $E_{ij} = \pi^{-m_{ij}} \mod p$. If any $s_{ij} < 2$, start this step over.
-Each member then also selects $y_i \in_R \mathbb{Z}_q$. $P_i$ then broadcasts $s_{ij}, E_{ij}, g^{y_i} \mod p$ and $\text{ZKP}\{y_i\}$.
-\comment{maybe just say each member performs a pairwise round 1 with each other member, and does $y_i$}
-
-Define $z_i = y_{i+1} / y_{i-1}$ (with cyclic index $i$). Each member is able to compute $g^{z_i} = g^{y_{i+1}} / g^{y_{i-1}}$, and check:
 \begin{itemize}
-    \item $g^{z_i} \neq 1 \mod p$;
-    \item One of $E_{ij} \neq E_{ji}$ or $s_{ij} \neq s_{ji}$ is true for all $j \in \{1,\ldots,n\} \setminus \{i\}$;
-    \item the received $\text{ZKP}\{y_j\}$ for all $j \in \{1,\ldots,n\} \setminus \{i\}$ is valid.
+    \item[\textbf{(Round 1)}] Every participant selects $r_{ij}, m_{ij} \in_R \mathbb{Z}_q^*$ for all $j \neq i$ and
+        compute $s_{ij} = r_{ij} + m_{ij} \mod q$ along with the element $E_{ij} = \pi^{-m_{ij}} \mod p$. If any $s_{ij} < 2$, $r_{ij}$ and $m_{ij}$
+        must be re-established. Additionally, each member selects $y_i \in_R \mathbb{Z}_q$.
+        Each participant broadcasts $s_{ij}$, $E_{ij}$, $g^{y_i} \mod p$ and $\text{ZKP}\{y_i\}$.
+    \item[]
+    \item[] Define $z_i = y_{i+1} / y_{i-1}$ (with cyclic index $i$). Each member is able to compute $g^{z_i} = g^{y_{i+1}} / g^{y_{i-1}}$, and check:
+        \begin{itemize}
+            \item $g^{z_i} \neq 1 \mod p$;
+            \item One of $E_{ij} \neq E_{ji}$ or $s_{ij} \neq s_{ji}$ is true for all $j \neq i$;
+            \item the received $\text{ZKP}\{y_j\}$ for all $j \neq i$ is valid.
+        \end{itemize}
+    \item[]
+    \item[\textbf{(Round 2)}] Every participant can compute the pairwise shared secrets $ss_{ij} = (\pi^{s_{ji}} E_{ji})^{r_{ij}} = \pi^{r_{ij} r_{ji}} \mod p$.
+        They broadcast $A_{ij} = H(ss_{ij} || E_{ij} || s_{ij} || E_{ji} || s_{ji})$.
+    \item[]
+    \item[] Each participant confirms the hashes are correct.
+    \item[]
+    \item[\textbf{(Round 3)}] Every participant $P_i$ broadcasts $(g^{z_i})^{y_i}$ and a zero knowledge proof,
+        ZKP\{$\tilde{y_i}$\} for providing the equality of the discrete logarithm of $(g^{z_i})^{y_i}$ to the base
+        $g^{z_i}$ and the discrete logarithm $g^{y_i}$ to the base $g$. Each member computes the pairwise Dragonfly keys,
+        $K_{ij} = H(ss_{ij} || E_{ij} \times E_{ji} || (s_{ij} + s_{ji}) \mod q)$ and the authentication and confirmation keys
+        $\kappa^{\text{MAC}} = H(K_{ij}, \text{``MAC''})$ and $\kappa^{\text{KC}} = H(K_{ij}, \text{``KC'})$. Each member additionally
+        broadcasts $t_{ij}^{MAC} = HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\})$ and
+        $t_{ij}^{KC} = HMAC(\kappa_{ij}^{KC}, ``KC'' || i || j || E_{ij} || E_{ji})$
+    \item[]
+    \item[] Finally, all members confirm:
+        \begin{itemize}
+            \item the received ZKP\{$\tilde{y_j}$\} for $j \neq i$ are valid;
+            \item the received key confirmation strings $t^{\text{KC}}_{ji}$ for $j \neq i$ are valid;
+            \item the received message authentication tags $t^{\text{MAC}}_{ji}$ for $j \neq i$ are valid.
+        \end{itemize}
+        and establish the group key according to the Burmester-Desmedt group key agreement protocol.
+        \comment{add reference to equation}
 \end{itemize}
 
-\emph{Round 2}
-\comment{compute shared secret, send hash}
-\comment{verify hash}
+The group scheme does not compromise what security properties Dragonfly might have, as the only additional information $y_i$ is not
+related to the Dragonfly protocol.
 
-\emph{Round 3}
-\comment{compute pairwise key, group stuff}
+For simplicity in our implementation of Dragonfly+, we mapped the password to $g$, the generator of $Q$. Obviously, this specific strategy is not
+secure since the password is not used. However, the actual latency measurements would not be affected much if at all.
