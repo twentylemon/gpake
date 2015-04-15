@@ -2,12 +2,12 @@
 
 The PAK/PPK protocols were first introduced by Boyko, MacKenzie and Patel in~\cite{BoMaPa00} in 2000
 as Diffie-Hellman based provably secure PAKEs, with the PAK protocol admitting key confirmation
-and PPK admitting only key authentication (although PPK) uses one less round of communication). 
+and PPK admitting only key authentication (although PPK uses one less round of communication). 
 An augmented variant of PAK, called PAK-X, was also introduced in the same paper.
 
 %The setting of PAK/PPK is similar to all other Diffie-Hellman based PAKEs. What is different is its dependencies on perfect hash functions.
 
-Let $\pi$ be the password shared by Alice and Bob and $p$ and $q$ be primes with $p = rq+1$, where $q \not | r$.
+Let $\pi$ be the password shared by Alice and Bob and $p$ and $q$ be primes with $p = rq+1$, where $q$ does not divide $r$.
 Furthermore, let $g$ be a generator of a subgroup of $\mathbb{Z}^\ast_p$ of size $q$ where the Decision
 Diffie-Hellman (DDH) problem is infeasible. Finally, we take $H_1, H_{2a}, H_{2b}, H_3$ to be independent random hash 
 functions. The PAK and PPK protocols are described as in Figures \ref{fig:pak} and \ref{fig:ppk}. 

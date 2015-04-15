@@ -43,8 +43,9 @@
 \begin{document}
 
 \begin{abstract}
-This project investigates group password authenticated key exchange methods (GPAKEs).  In 
-particular, we detail the so-called `fairy ring dance' method recently described by 
+This project investigates password authenticated key exchange methods (PAKEs), and variant among many agents:
+group password authenticated key exchange methods (GPAKEs).  In 
+particular, after surveying classical information on two party PAKEs we detail the so-called `fairy ring dance' method recently described by 
 Hao et. al.~\cite{HaYiChSh15} which allows for the extension of two party password authenticated key exchange 
 methods (PAKEs) with explicit key confirmation to a group setting with an arbitrary number of users without
 increasing round complexity (the computational complexity, of course, increases with the number of users).  
@@ -108,7 +109,7 @@ which compare these methods against previous Java implementations of SPEKE+ and 
 available at \url{https://github.com/twentylemon/gpake}).  
 We also survey the relevant background material on Zero Knowledge Proofs and classical PAKEs missing from
 Hao et. al.~\cite{HaYiChSh15} (which had constrained space as a conference abstract), and fixed some minor 
-Java implementation errors which could cause the timings in that paper to be slightly inaccurate.
+Java implementation oversights which could cause the timings in that paper to be slightly inaccurate.
 
 %%%%%%%%%%%%%%%%%%%%%
 % Two Party Schemes
@@ -232,7 +233,7 @@ coming from the security of general key exchange protocols:
  are known as augmented PAKEs, although some (for instance, Hao et. al.~\cite{HaYiChSh15}) have argued that 
  such a requirement is not useful as the low entropy of the password means that it will soon be discovered 
  through an offline dictionary attack on the verification files.  Nevertheless, augmented variants exist for a number
-of balanced PAKEs (for example Augmented-EKE for EKE, B-SPEKE for SPEKE and PAK-X for PAK/PPK). 
+of PAKEs (for example Augmented-EKE for EKE, B-SPEKE for SPEKE and PAK-X for PAK/PPK). 
 \vspace{0.3in}
 
 \subsection{SPEKE}
