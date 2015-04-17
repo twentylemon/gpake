@@ -1,40 +1,53 @@
-In this section, we present the Group PAKE extension of the PPK protocol, the simpler of the PAK/PPK
-suite, using the Fairy Ring Dance construction from~\cite{HaYiChSh15}. The PPK+ protocol is described as follows:
+In this section we present the Group PAKE extension of the PPK protocol, the simpler of the PAK/PPK
+suite. The PPK+ protocol, which has the same setup as the PPK protocol of Section~\ref{sec:PPK}, is described as follows:
+\\
 
 \begin{itemize}
     \item[\textbf{(Round 1)}] Every participant $P_i$ selects $x_i\in_R \mathbb{Z}_q$ and $y_i\in_R \mathbb{Z}_q$ and 
-        broadcasts $m_{ij} = g^{x_i}\cdot (H_1(i, j, \pi))^r$ for all $j \neq i$ as well as $g^{y_i}$ together with a 
-        zero-knowledge proof, denoted as ZKP\{$y_i$\}, for proving the knowledge of the exponent $y_i$.
+        broadcasts, for all $i \neq j$, the values
+        \[ m_{ij} = g^{x_i}\cdot (H_1(i, j, \pi))^r, \qquad g^{y_i}, \qquad \text{ZKP}\{y_i\}.\]
     \item[]
-    \item[] We define $z_i = y_{i+1} - y_{i-1}$. Then everyone is able to compute $g^{z_i} = g^{y_{i+1}}/g^{y_{i-1}}$. 
-        Every participant $P_i$ also computes $\sigma_{ij} = \left(\frac{m_{ji}}{H_1(j,i,\pi)^r}\right)^{x_i} = g^{x_i x_j}$
-        and checks:
-        \begin{itemize}
-            \item $g^{z_i} \neq 1$ for $i = 1, \ldots, n$.
-            \item $m_j \neq 0$ for $j = 1,\ldots,n, j\neq i$.
-            \item the received ZKP\{$y_j$\} for $j = 1,\ldots, n, j\neq i$ are valid.
+    \item[] Define $z_i = y_{i+1} / y_{i-1}$ (with cyclic index $i$). Each $P_i$ is able to compute $g^{z_i} = g^{y_{i+1}} / g^{y_{i-1}}$ and 
+    \[ \sigma_{ij} = \left(\frac{m_{ji}}{H_1(j,i,\pi)^r}\right)^{x_i} = g^{x_i x_j},\] 
+    and check: 
+    \begin{itemize}
+            \item $g^{z_i} \neq 1 \mod p$ for $i = 1, \ldots, n$;
+            \item $m_{ij} \neq 0$ for $j \neq i$;
+            \item the $\text{ZKP}\{y_j\}$ for all $j \neq i$ are valid.
         \end{itemize}
-        Similar to all GPAKE constructions, the ZKP{$y_i$} are standard Schnorr non-interactive zero knowledge proofs outlined in~\cite{HaYiChSh15}.
     \item[]
-    \item[\textbf{(Round 2)}] Every participant $P_i$ broadcasts $(g^{z_i})^{y_i}$ and a zero knowledge proof,
-        ZKP\{$\tilde{y_i}$\} for providing the equality of the discrete logarithm of $(g^{z_i})^{y_i}$ to the base
-        $g^{z_i}$ and the discrete logarithm $g^{y_i}$ to the base $g$. Everyone then computes the raw pairwise
-        keys $K_{ij}$ according to PPK, namely $K_{ij} = H_3(i,j,m_{ij}, m_{ji}, \sigma_{ij}, \pi)$, and the derived
-        authentication and confirmation keys, $\kappa^{\text{MAC}} = H(K_{ij}, \text{``MAC"})$,
-        $\kappa^{\text{KC}} = H(K_{ij}, \text{``KC"})$. Furthermore, let
-        $A_{ij} = g^{y_i}\mid\mid \text{ZKP}\{y_i\}\mid\mid K_{ij}\mid\mid \text{ZKP}\{\tilde{y_i}\}$,
-        $P_i$ broadcast $t_{ij}^{\text{MAC}}  =\text{HMAC}(\kappa^{\text{MAC}}_{ij}, A_{ij})$ and
-        $t_{ij}^{\text{KC}}  = \text{HMAC}(\kappa^{\text{KC}}_{ij}, \text{``KC''}\mid\mid i\mid\mid j \mid\mid m_i \mid\mid m_j)$ for each $j \neq i$.
+    \item[\textbf{(Round 2)}] Every participant $P_i$ broadcasts $(g^{z_i})^{y_i}$ and a zero knowledge proof
+        ZKP\{$\tilde{y_i}$\} proving the equality of the discrete logarithm of $(g^{z_i})^{y_i}$ to the base
+        $g^{z_i}$ and the discrete logarithm $g^{y_i}$ to the base $g$. Each member computes the pairwise PPK keys
+        \[ K_{ij} = H_3(i,j,m_{ij}, m_{ji}, \sigma_{ij}, \pi), \]
+        and the authentication and confirmation keys
+        \[\kappa^{\text{MAC}} = H(K_{ij}, \text{``MAC''})\qquad\qquad \kappa^{\text{KC}} = H(K_{ij}, \text{``KC''}).\]
+        Each member additionally broadcasts 
+        \begin{align*}
+        t_{ij}^{MAC} &= HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\}) \\
+        t_{ij}^{KC} &= HMAC(\kappa_{ij}^{KC}, ``KC'' || i || j || E_{ij} || E_{ji}).
+        \end{align*}
     \item[]
-    \item[] When this round finishes, everyone checks:
-        \begin{itemize}
-            \item the received ZKP\{$\tilde{y_j}$\} for $j = 1,\ldots, n, j\neq i$ are valid;
-            \item the received key confirmation strings $t^{\text{KC}}_{ji}$ for $j = 1,\ldots, n, j\neq i$ are valid;
-            \item the received message authentication tags $t^{\text{MAC}}_{ji}$ for $j = 1,\ldots, n, j\neq i$ are valid.
+    \item[]  Finally, all members confirm:
+    \begin{itemize}
+            \item the received ZKP\{$\tilde{y_j}$\} for $j \neq i$ are valid;
+            \item the received key confirmation strings $t^{\text{KC}}_{ji}$ for $j \neq i$ are valid;
+            \item the received message authentication tags $t^{\text{MAC}}_{ji}$ for $j \neq i$ are valid.
         \end{itemize}
-        Again, the zero knowledge proofs are standard Chaum-Pedersen ZKP used in~\cite{HaYiChSh15}. At the end of the two rounds, the same
-        formula is used for calculating the group key. \comment{Yi: Steve please put the formula in section 3.1 and I'll reference it here.}
+        and establish the group key via Equation~\eqref{eq:key}, according to the Burmester-Desmedt group key agreement protocol.
+        \item[]
 \end{itemize}
+
+We now go over a few details of our implementation of the
+protocol. First, the supposedly independent random hash functions $H_1$ and $H_3$ are both the
+ \textit{SHA-256} hash function shifted by two different constants. As with the modification for Dragonfly this is not
+secure, however our implementation is simply used for comparing latency in the different GPAKEs -- this would be fixed 
+before using the code for any other purpose.  Additionally,
+as the formula for calculating the raw pairwise keys $K_{ij}$ at the end of
+Round 1 above is not symmetric between $i$ and $j$, we calculate $K_{ij}$ where $i < j$ (practically, the 
+participants can be ordered in some arbitrary way, such as lexicographically by their unique identifiers 
+or by the time they accepted to enter the group protocol); both parties $P_i$ and $P_j$ sill calculate the same pairwise key $K_{i,j}$.
+
 
 %\emph{Round 1}: Every participant $P_i$ selects $x_i\in_R \mathbb{Z}_q$ and $y_i\in_R \mathbb{Z}_q$ and 
 %broadcasts $m_{ij} = g^{x_i}\cdot (H_1(i, j, \pi))^r$ for all $j \neq i$ as well as $g^{y_i}$ together with a 
@@ -73,19 +86,6 @@ suite, using the Fairy Ring Dance construction from~\cite{HaYiChSh15}. The PPK+ 
 %
 %At the end of the two rounds, the same formula is used for calculating the group key. \comment{Yi: Steve please put the formula in section 3.1 and I'll reference it here.}
 %
-
-The security of the GPAKE protocol follows directly from the security of the two party protocol PPK.
-
-For simplicity of our demonstration, there are a few tweaks we made in our implementation of the
-protocol. Firstly, the supposedly independent random hash functions $H_1$ and $H_3$ are implemented
-as \textit{SHA-256} shifted by two different constants. Obviously it has security implications on the
-protocol, but it will certainly not be used in real life implementations, nor does it have any impact on the
-run time performance that we are measuring.
-
-Secondly, it should be noted that the formula for calculating the raw pairwise keys $K_{ij}$ at the end of
-round 1 is not symmetric between $i$ and $j$. A modification is therefore made such that when
-calculating $K_{ij}$, we set $i < j$ without loss of generality. In this case both parties would be able to
-calculate the same pairwise key.
 
 
 

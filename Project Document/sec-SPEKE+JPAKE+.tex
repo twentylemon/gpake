@@ -1,1 +1,82 @@
-Info about SPEKE+ and J-PAKE+
+The construction by Hao et. al. of the explicit GPAKE SPEKE+ follows the general outline above very closely.  Let $p = 2q - 1$ where $p$ and $q$ are prime, and let $g$ be a fixed generator of the subgroup $\mathbb{Z}_q$ of $\mathbb{Z}_p^*$ with order $q$.  To the password $\pi$ we associate a group element $g_{\pi} = (H(\pi)^2$ mod $p$, where $H$ is a hash function. SPEKE+ is run as follows:
+\\
+
+\begin{itemize}
+    \item[\textbf{(Round 1)}] Every participant $P_i$ selects $x_i\in_R \mathbb{Z}_q^*$ and $y_i\in_R \mathbb{Z}_q$ and 
+        broadcasts, for all $i \neq j$, the values
+        \[g_{\pi}^{x_i} , \qquad g^{y_i}, \qquad \text{ZKP}\{y_i\}.\]
+    \item[]
+    \item[] Define $z_i = y_{i+1} / y_{i-1}$ (with cyclic index $i$). Each $P_i$ is able to compute $g^{z_i} = g^{y_{i+1}} / g^{y_{i-1}}$ and 
+    \[ \sigma_{ij} = \left(\frac{m_{ji}}{H_1(j,i,\pi)^r}\right)^{x_i} = g^{x_i x_j},\] 
+    and check: 
+    \begin{itemize}
+            \item $g^{z_i} \neq 1 \mod p$ for $i = 1, \ldots, n$;
+            \item $g_{\pi}^{x_j} \notin \{1,p-1\}$ for $j \neq i$;
+            \item the $\text{ZKP}\{y_j\}$ for all $j \neq i$ are valid.
+        \end{itemize}
+    \item[]
+    \item[\textbf{(Round 2)}] Every participant $P_i$ broadcasts $(g^{z_i})^{y_i}$ and a zero knowledge proof
+        ZKP\{$\tilde{y_i}$\} proving the equality of the discrete logarithm of $(g^{z_i})^{y_i}$ to the base
+        $g^{z_i}$ and the discrete logarithm $g^{y_i}$ to the base $g$. Each member computes the pairwise SPEKE keys
+        \[ K_{ij} = g_{\pi}^{x_ix_j}, \]
+        and the authentication and confirmation keys
+        \[\kappa^{\text{MAC}} = H(K_{ij}, \text{``MAC''})\qquad\qquad \kappa^{\text{KC}} = H(K_{ij}, \text{``KC''}).\]
+        Each member additionally broadcasts 
+        \begin{align*}
+        t_{ij}^{MAC} &= HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\})\\
+        t_{ij}^{KC} &= HMAC(\kappa_{ij}^{KC}, ``KC'' || i || j || g_{\pi}^{x_i} || g_{\pi}^{x_j}).
+        \end{align*}
+    \item[]
+    \item[]  Finally, all members confirm:
+    \begin{itemize}
+            \item the received ZKP\{$\tilde{y_j}$\} for $j \neq i$ are valid;
+            \item the received key confirmation strings $t^{\text{KC}}_{ji}$ for $j \neq i$ are valid;
+            \item the received message authentication tags $t^{\text{MAC}}_{ji}$ for $j \neq i$ are valid.
+        \end{itemize}
+        and establish the group key via Equation~\eqref{eq:key}, according to the Burmester-Desmedt group key agreement protocol.
+        \item[]
+        \item[]
+\end{itemize}
+
+The construction of J-PAKE+ is similar.  Let $p = rq - 1$ where $p$ and $q$ are prime, and let $g$ be a fixed generator of the subgroup $\mathbb{Z}_q$ of $\mathbb{Z}_p^*$ with order $q$.  Then the J-PAKE+ protocol consists of the following steps:
+\\
+
+\begin{itemize}
+    \item[\textbf{(Round 1)}] Every participant $P_i$ selects $a_{ij}\in_R \mathbb{Z}_q$ and $b_{ij} \in_R \mathbb{Z}_q^*$ for all $j \neq i$.Additionally, each member selects $y_i \in_R \mathbb{Z}_q$ and broadcasts the values
+        \[ g^{a_{ij}},\qquad g^{b_{ij}}, \qquad g^{y_i} \text{ mod } p, \qquad \text{ZKP}\{a_{ij}\}, \qquad \text{ZKP}\{b_{ij}\}, \qquad \text{ZKP}\{y_i\}.\]
+    \item[]
+    \item[] Define $z_i = y_{i+1} / y_{i-1}$ (with cyclic index $i$). Each member is able to compute $g^{z_i} = g^{y_{i+1}} / g^{y_{i-1}}$, and check:
+        \begin{itemize}
+            \item $g^{z_i} \neq 1 \mod p$ for $i = 1, \ldots, n$;
+            \item $g^{b_{ji}}\neq 1$ for $j \neq i$;
+            \item the ZKP$\{a_{ji}\}$, ZKP$\{b_{ji}\}$, and ZKP$\{y_j\}$, are valid for all $j \neq i$.
+        \end{itemize}
+    \item[]
+    \item[\textbf{(Round 2)}] Every participant $P_i$ can compute and broadcast, for each $j \neq i$, 
+    \[ \beta_{ij} = (g^{a_{ij} + a_{ji} + b_{ji}})^{b_{ij} \cdot s}, \qquad \text{ZKP}\{b_{ji} \cdots s\}. \]
+    \item[]
+    \item[] Each participant $P_i$ verifies $\text{ZKP}\{b_{ji} \cdots s\}$ for all $j \neq i$.
+    \item[]
+    \item[\textbf{(Round 3)}] Every participant $P_i$ broadcasts $(g^{z_i})^{y_i}$ and a zero knowledge proof
+        ZKP\{$\tilde{y_i}$\} proving the equality of the discrete logarithm of $(g^{z_i})^{y_i}$ to the base
+        $g^{z_i}$ and the discrete logarithm $g^{y_i}$ to the base $g$. Each member computes the pairwise J-PAKE keys
+        \[ K_{ij} = (\beta_{ji}/g^{b_{ij}b_{ji}s})^{b_{ij}}  \]
+        and the authentication and confirmation keys
+        \[\kappa^{\text{MAC}} = H(K_{ij}, \text{``MAC''})\qquad\qquad \kappa^{\text{KC}} = H(K_{ij}, \text{``KC''}).\]
+        Each member additionally broadcasts 
+         \begin{align*}
+         t_{ij}^{MAC} &= HMAC(\kappa_{ij}^{MAC},  g^{y_i} || \text{ZKP}\{y_i\} || (g^{z_i})^{y_i} || \text{ZKP}\{\tilde{y_i}\}) \\
+        t_{ij}^{KC} &= HMAC(\kappa_{ij}^{KC}, ``KC'' || i || j || E_{ij} || E_{ji}).
+        \end{align*}
+    \item[]
+    \item[] Finally, all members confirm:
+        \begin{itemize}
+            \item the received ZKP\{$\tilde{y_j}$\} for $j \neq i$ are valid;
+            \item the received key confirmation strings $t^{\text{KC}}_{ji}$ for $j \neq i$ are valid;
+            \item the received message authentication tags $t^{\text{MAC}}_{ji}$ for $j \neq i$ are valid.
+        \end{itemize}
+        and establish the group key via Equation~\eqref{eq:key}, according to the Burmester-Desmedt group key agreement protocol. 
+        \item[] 
+\end{itemize}
+
+
