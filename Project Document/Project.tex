@@ -310,7 +310,20 @@ of PAKEs (for example Augmented-EKE for EKE, B-SPEKE for SPEKE and PAK-X for PAK
 
 \section{Conclusion}
 \label{sec:Conclusion}
-The conclusion
+This project has investigated password authenticated key exchange methods (PAKEs), both in classical two party settings
+and in the context of group key establishment.  After surveying some literature on PAKEs, we outlined a general construction
+recently proposed by Hao et. al.~\cite{HaYiChSh15} to convert a two party PAKE into a group PAKE (with key confirmation) 
+which adds at most one additional round of communication.  After detailing two explicit GPAKEs derived by Hao et. al. -- 
+SPEKE+ and J-PAKE+ -- we constructed two new GPAKEs -- Dragonfly+ and PPK+ -- based on well known two party PAKE protocols.
+These four schemes were implemented and timings were shown comparing the latency of each method.
+\\
+
+Although the work of Hao et. al.~\cite{HaYiChSh15} includes informal proofs of desired security properties which are inherited
+from an underlying PAKE to the GPAKE which results from their general construction, the authors do not show security in a formal
+model (in the sense of Bellare, Pointcheval, and Rogaway~\cite{BePoRo00} for two party PAKEs).  Future work could (and should!) look 
+into creating a formal model for GPAKEs which is analogous to the BPR model for PAKEs, and provide a proof that the GPAKEs resulting
+from any PAKE which is secure in the BPR model is secure this formal GPAKE attack model.  This work will become more important as
+the number of Internet compatible devices continues to grow, increasing the need for group key establishment schemes.
 
 
 
