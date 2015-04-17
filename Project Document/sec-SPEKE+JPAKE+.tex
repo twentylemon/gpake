@@ -1,4 +1,4 @@
-The construction by Hao et. al. of the explicit GPAKE SPEKE+ follows the general outline above very closely.  Let $p = 2q - 1$ where $p$ and $q$ are prime, and let $g$ be a fixed generator of the subgroup $\mathbb{Z}_q$ of $\mathbb{Z}_p^*$ with order $q$.  To the password $\pi$ we associate a group element $g_{\pi} = (H(\pi)^2$ mod $p$, where $H$ is a hash function. SPEKE+ is run as follows:
+The construction by Hao et. al. of the explicit GPAKE SPEKE+ follows the general outline above very closely.  Let $p = 2q - 1$ where $p$ and $q$ are prime, and let $g$ be a fixed generator of the subgroup $\mathbb{Z}_q$ of $\mathbb{Z}_p^*$ with order $q$.  To the password $\pi$ we associate a group element $g_{\pi} = H(\pi)^2$ mod $p$, where $H$ is a hash function. SPEKE+ is run as follows:
 \\
 
 \begin{itemize}
@@ -6,9 +6,7 @@ The construction by Hao et. al. of the explicit GPAKE SPEKE+ follows the general
         broadcasts, for all $i \neq j$, the values
         \[g_{\pi}^{x_i} , \qquad g^{y_i}, \qquad \text{ZKP}\{y_i\}.\]
     \item[]
-    \item[] Define $z_i = y_{i+1} / y_{i-1}$ (with cyclic index $i$). Each $P_i$ is able to compute $g^{z_i} = g^{y_{i+1}} / g^{y_{i-1}}$ and 
-    \[ \sigma_{ij} = \left(\frac{m_{ji}}{H_1(j,i,\pi)^r}\right)^{x_i} = g^{x_i x_j},\] 
-    and check: 
+    \item[] Define $z_i = y_{i+1} / y_{i-1}$ (with cyclic index $i$). Each $P_i$ is able to compute $g^{z_i} = g^{y_{i+1}} / g^{y_{i-1}}$ and checks that:
     \begin{itemize}
             \item $g^{z_i} \neq 1 \mod p$ for $i = 1, \ldots, n$;
             \item $g_{\pi}^{x_j} \notin \{1,p-1\}$ for $j \neq i$;

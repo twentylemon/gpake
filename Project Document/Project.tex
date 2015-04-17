@@ -43,11 +43,11 @@
 \begin{document}
 
 \begin{abstract}
-This project investigates password authenticated key exchange methods (PAKEs), and variant among many agents:
+This project investigates password authenticated key exchange methods (PAKEs), and variants involving many agents:
 group password authenticated key exchange methods (GPAKEs).  In 
 particular, after surveying classical information on two party PAKEs we detail the so-called `fairy ring dance' method recently described by 
 Hao et. al.~\cite{HaYiChSh15} which allows for the extension of two party password authenticated key exchange 
-methods (PAKEs) with explicit key confirmation to a group setting with an arbitrary number of users without
+methods (PAKEs) with key confirmation to a group setting with an arbitrary number of users without
 increasing round complexity (the computational complexity, of course, increases with the number of users).  
 This paper presents two new GPAKEs constructed through these means, based on the 
 Dragonfly and PAK/PPK two party protocols, and includes timings comparing them to previous GPAKEs of
@@ -91,9 +91,9 @@ the J-PAKE~\cite{HaRy2010} protocol).
 
 The structure of this document is as follows: Section~\ref{sec:PAKE} begins by giving a survey of classical 
 two-party PAKEs -- including explicit descriptions of the PAKEs which will be extended into the group 
-setting and background information on the zero knowledge proof protocols these use.  Section~\ref{sec:GPAKE} 
+setting.  Section~\ref{sec:GPAKE} 
 starts with a description of the theoretical methodology developed by Hao et. al.~\cite{HaYiChSh15} to extend 
-two-party PAKEs into a group setting.  After this theoretical background, we give two explicit GPAKEs 
+two-party PAKEs into a group setting.  After this general background, we give two explicit GPAKEs 
 (SPEKE+ and J-PAKE+) constructed by Hao et. al. using this methodology, followed by two explicit GPAKEs 
 which we have derived through the same means (a group variant of the IEEE 802.11-2012 standard Dragonfly 
 protocol~\cite{Ha15}, and a variant of the PAK/PPK protocol \cite{BoMaPa00}).  Security properties of these
@@ -188,13 +188,13 @@ coming from the security of general key exchange protocols:
  \item[]
  \item[] \textbf{(Forward secrecy for established keys)}
  \item[] If the password is disclosed, past session keys cannot be computed by an attacker.  
- This implies that a \emph{passive} attacker who knows the password he cannot learn a session 
+ This implies that a \emph{passive} attacker who knows the password cannot learn a session 
  key by observing communication between Alice and Bob (of course, an active attacker could 
  establish a shared key with one of the participants as he would have access to all of their 
  secret information).
  \item[]
  \item[] \textbf{(Known session security)}
- \item[] If an attacker learns all secrets of a protocol in progress, it does not reveal 
+ \item[] Even if an attacker learns all session specific secrets of a protocol in progress, these secrets do not reveal 
  any information about other established sessions.
   \item[]
  \item[] \textbf{(Online dictionary attack resistance)}
@@ -321,8 +321,8 @@ These four schemes were implemented and timings were shown comparing the latency
 Although the work of Hao et. al.~\cite{HaYiChSh15} includes informal proofs of desired security properties which are inherited
 from an underlying PAKE to the GPAKE which results from their general construction, the authors do not show security in a formal
 model (in the sense of Bellare, Pointcheval, and Rogaway~\cite{BePoRo00} for two party PAKEs).  Future work could (and should!) look 
-into creating a formal model for GPAKEs which is analogous to the BPR model for PAKEs, and provide a proof that the GPAKEs resulting
-from any PAKE which is secure in the BPR model is secure this formal GPAKE attack model.  This work will become more important as
+into formal models for GPAKEs and provide a proof that the GPAKE resulting
+from any PAKE which is secure in a formal model (like the BPR model) is secure in a formal GPAKE attack model.  This work will become more important as
 the number of Internet compatible devices continues to grow, increasing the need for group key establishment schemes.
 
 
